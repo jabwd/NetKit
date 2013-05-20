@@ -33,14 +33,14 @@ class NKUserController extends NKActionController
 			$profileUser = $users->find($userID);
 			
 			// only 1 visit per session, login required
-			if( array_key_exists('viewed', $_SESSION) && !$_SESSION['viewed'][$profileUser->id] && $this->_user->id > 0 )
+			if( !$_SESSION['viewed'][$profileUser->id] && $this->_user != NULL )
 			{
 				// update the hits count, just to make sure that it really is an int
 				// we cast it and re-assign the value, then save to the database
 				$hits = (int)$profileUser->profileHits;
 				$hits++;
 				$profileUser->profileHits	= $hits;
-				//$profileUser->save();
+				$profileUser->save();
 				
 				// save it for the next visit, stop abuse!
 				$_SESSION['viewed'][$profileUser->id] = true;
@@ -49,22 +49,6 @@ class NKUserController extends NKActionController
 			$this->view->isSelf = false;
 		}
 		
-		$today 	= getdate();
-		$then 	= getdate(strtotime($profileUser->created));
-		
-		// get days
-		$days = abs($then['mday']-$today['mday']);
-		$days = $days.' '.(($days==1) ? "day" : "days");
-		
-		// get months
-		$months = abs($then['mon']-$today['mon']);
-		$months = ($months>0) ? $months." month".(($months==1) ? "":"s").", ":"";
-		
-		// get years
-		$years = abs($then['year']-$today['year']);
-		$years = ($years>0) ? $years." year".(($years==1) ? "":"s").", ":"";
-		
-		$this->view->accountAge = $years.$months.$days;
 		$this->view->user = $profileUser;
 	}
 	
