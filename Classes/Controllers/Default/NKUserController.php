@@ -11,7 +11,7 @@ class NKUserController extends NKActionController
 	
 	public function indexAction()
 	{
-		$list = Users::defaultTable()->fetchAll();
+		$list = Users::defaultTable()->fetchAll("ORDER BY created DESC LIMIT 0,30");
 		
 		$this->view->userList 	= $list;
 		$this->view->userCount 	= Users::defaultTable()->count();
