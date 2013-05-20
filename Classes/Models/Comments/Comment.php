@@ -30,6 +30,20 @@ class Comment extends NKTableRow
 	}
 	
 	/**
+	 * Makes sure that the author's reputation is decreased properly
+	 * for the deleting of the comment ( either by himself or an admin )
+	 */ 
+	public function delete()
+	{
+		$currentUser = NKSession::currentUser();
+		if( $currentUser )
+		{
+			$currentUser->removeReputation(Config::CommentCreateReputation);
+		}
+		parent::delete();
+	}
+	
+	/**
 	 * Determines whether the current user is allowed
 	 * to post any more comments. This is an anti spam
 	 * feature of the website

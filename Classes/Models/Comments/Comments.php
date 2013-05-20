@@ -1,5 +1,6 @@
 <?php
-class Comments extends NKTable {
+class Comments extends NKTable
+{
 	public $tableName 	= "comments";
 	public $rowClass	= "Comment";
 	
