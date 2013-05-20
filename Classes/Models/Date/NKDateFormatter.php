@@ -61,7 +61,9 @@ class NKDateFormatter {
 		// determine which format is relevant
 		if( $years > 0 ) {
 			return $years.' '.(($years==1) ? "year":"years").' ago';
-		} else if( $months > 0 ) {
+		}
+		else if( $months > 0 )
+		{
 			return $months.' '.(($months==1) ? "month":"months"). ' ago';
 		} else if( $days > 0 ) {
 			return $days.' '.(($days==1) ? "day":"days").' ago';
