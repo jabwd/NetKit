@@ -43,6 +43,8 @@ class BBCodeParser
 	 * Determines whether the raw content shoudl be (re)parsed
 	 * can be used in order to speed up the result() function
 	 * if called more than once
+	 *
+	 * @return boolean
 	 */
 	public function shouldParse()
 	{
@@ -55,6 +57,8 @@ class BBCodeParser
 	
 	/**
 	 * Parses the raw content into HTML output
+	 *
+	 * @return void
 	 */
 	public function parse()
 	{
@@ -142,6 +146,8 @@ class BBCodeParser
 	/**
 	 * This method figures out whether the content is already parsed or not
 	 * parses it otherwise and then returns the result
+	 *
+	 * @return string the result string
 	 */
 	public function result()
 	{
