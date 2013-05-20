@@ -1,21 +1,13 @@
 <div class="contentBox">
 	<form method="post">
-		<table class="form">
-			<tr>
-				<td>Title</td><td><input type="text" name="title" value="<?=$this->page->title?>" maxlength="50"/></td>
-			</tr>
-		</table>
+		<input type="text" placeholder="Title" name="title" value="<?=$this->page->title?>" maxlength="50"/>
+		<br />
+		<br />
 		<textarea id="elm1" name="content" class="mceEditor"><?=$this->page->content?></textarea>
 		<br />
-		<table class="form">
-			<tr>
-				<td></td>
-				<td>
-					<input type="submit" name="cancel" value="Back"/>
-					<input type="submit" name="save" value="Save changes"/>
-				</td>
-			</tr>
-		</table>
+		<br />
+		<input type="submit" name="cancel" value="Cancel"/>
+		<input type="submit" name="save" value="Save changes"/>
 	</form>
 	
 	<?php

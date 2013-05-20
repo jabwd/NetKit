@@ -27,6 +27,7 @@ class BBCodeParser
 		'img'			=> '<img src="',
 		'/img'			=> '"/>',
 		'youtube'		=> '<iframe width="560" height="315" src="http://www.youtube.com/embed/%s" style="border:none;" allowfullscreen></iframe>',
+		'progress'		=> '<div class="progressBar"><div class="progress" style="width:%s;"></div></div>'
 	);
 	
 	public function __construct($content = '')
