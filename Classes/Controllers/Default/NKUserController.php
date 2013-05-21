@@ -65,7 +65,8 @@ class NKUserController extends NKActionController
 	
 	public function loginAction() {
 		// the user is already logged in, ignore this request
-		if( NKSession::currentUser() ) {
+		if( NKSession::currentUser() )
+		{
 			redirect('/');
 		}
 		
@@ -81,6 +82,7 @@ class NKUserController extends NKActionController
 			{
 				// login successful
 				$this->view->loginSuccess = true;
+				NKSession::toPreviousPage();
 			}
 			else
 			{
@@ -95,7 +97,7 @@ class NKUserController extends NKActionController
 		}
 		else if( $this->_user )
 		{
-			redirect('/'.NKSession::previousPage());
+			NKSession::toPreviousPage();
 		}
 	}
 	

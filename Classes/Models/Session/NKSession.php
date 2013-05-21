@@ -157,14 +157,20 @@ class NKSession
 		setcookie(self::CookieUserIDKey, "", time()-1, "/", Config::domainName);
 	}
 	
-	public static function setPreviousPage($page)
+	public static function updatePreviousPage()
 	{
-		$_SESSION['previousURI'] = $page;
+		$_SESSION['previousURI'] 	= $_SESSION['current'];
+		$_SESSION['current'] 		= $_SERVER['REQUEST_URI'];
 	}
 	
 	public static function previousPage()
 	{
 		return $_SESSION['previousURI'];
+	}
+	
+	public static function toPreviousPage()
+	{
+		redirect(self::previousPage());
 	}
 	
 	/**

@@ -118,6 +118,8 @@ class NKWebsite
 		// Done with pre-generation, time to render the website and send the buffer
 		$view = new NKMainView($this->_controller->layout, $this->_controller->view);
 		$view->render();
+		
+		NKSession::updatePreviousPage();
 	}
 	
 	public function getTitle()
