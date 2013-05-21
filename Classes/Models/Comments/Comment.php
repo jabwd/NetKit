@@ -26,7 +26,7 @@ class Comment extends NKTableRow
 			$_SESSION['userCommentCount'] = $count;
 			$_SESSION['userLastCommentStamp'] = time();
 		}
-		parent::save();
+		return parent::save();
 	}
 	
 	/**
@@ -40,7 +40,7 @@ class Comment extends NKTableRow
 		{
 			$currentUser->removeReputation(Config::CommentCreateReputation);
 		}
-		parent::delete();
+		return parent::delete();
 	}
 	
 	/**
