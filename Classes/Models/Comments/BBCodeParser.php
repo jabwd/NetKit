@@ -28,7 +28,9 @@ class BBCodeParser
 		'/img'			=> '"/>',
 		'youtube'		=> '<iframe width="560" height="315" src="http://www.youtube.com/embed/%s" style="border:none;" allowfullscreen></iframe>',
 		'progress'		=> '<div class="progressBar"><div class="progress" style="width:%s;"></div></div>',
-		'flag'			=> '<img src="resources/images/flags/%s.png" width="16px" height="11px"/>'
+		'flag'			=> '<img src="resources/images/flags/%s.png" width="16px" height="11px"/>',
+		'link'			=> '<a href="%s">',
+		'/link'			=> '</a>'
 	);
 	
 	public function __construct($content = '')
