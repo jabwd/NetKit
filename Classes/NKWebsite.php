@@ -55,10 +55,6 @@ class NKWebsite
 	{
 		// re-cache everything, handy when developing
 		$cacheManager = NKCacheManager::defaultManager();
-		if( Config::noCache )
-		{
-			$cacheManager->purge();
-		}
 		
 		// set up the globally available list of classes for the autoloader found in
 		// libnetkit.php [NetKit/Tools/libnetkit.php]
