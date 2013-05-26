@@ -10,7 +10,8 @@ class User extends NKTableRow
 	 * Returns:		an User instance associated with the current Session. null on failure
 	 *				or null when no user is logged in
 	 */
-	public static function currentUser() {
+	public static function currentUser()
+	{
 		return NKSession::currentUser();
 	}	
 	
@@ -19,7 +20,8 @@ class User extends NKTableRow
 	 *
 	 * Returns:		a string containing the random salt, length 22 charecters
 	 */
-	private static function generateSalt() {
+	private static function generateSalt()
+	{
 		return substr(sha1(mt_rand()),0,22);  
 	}
 	
@@ -30,8 +32,10 @@ class User extends NKTableRow
 	 *				calculate a new salt ( if none is available ) and returns
 	 *				a hashed version of the password
 	 */
-	public function newHashedPassword($password) {
-		if( ! $this->salt || strlen($this->salt) < 2 ) {
+	public function newHashedPassword($password)
+	{
+		if( ! $this->salt || strlen($this->salt) < 2 )
+		{
 			$this->salt = self::generateSalt();
 		}
 		return hash("sha512", $password.$this->salt."Aab12021XH");
@@ -97,7 +101,12 @@ class User extends NKTableRow
 			$prefix = '<span class="flag" style="background-image:url(\''.Config::resourceFolderPath.'images/flags/'.$this->flag.'.png\');">';
 			$suffix = '</span>';
 		}
-		if( strlen($this->nickname) > 0 ) {
+		if( $this->honorary )
+		{
+			$prefix = $prefix . '[HG]';
+		}
+		if( strlen($this->nickname) > 0 )
+		{
 			return $prefix.$this->nickname.$suffix;
 		}
 		return $prefix.$this->username.$suffix;
