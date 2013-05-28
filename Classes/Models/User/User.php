@@ -103,7 +103,7 @@ class User extends NKTableRow
 		}
 		if( $this->honorary )
 		{
-			$prefix = $prefix . '[HG]';
+			$prefix = $prefix . 'Honorary^';
 		}
 		if( strlen($this->nickname) > 0 )
 		{
@@ -113,7 +113,8 @@ class User extends NKTableRow
 	}
 	
 	// legacy
-	public function getDisplayString() {
+	public function getDisplayString()
+	{
 		return $this->displayString();
 	}
 	
@@ -121,8 +122,10 @@ class User extends NKTableRow
 	 * Returns the current user avatar
 	 * or the default avatar if the user has not set any
 	 */
-	public function avatarURL() {
-		if( strlen($this->avatarURL) > 3 ) {
+	public function avatarURL()
+	{
+		if( strlen($this->avatarURL) > 3 )
+		{
 			return $this->avatarURL;
 		}
 		return Config::defaultAvatar;
@@ -132,8 +135,10 @@ class User extends NKTableRow
 	 * Returns the current user banner image URL
 	 * or the default banner image
 	 */
-	public function bannerURL() {
-		if( strlen($this->bannerURL) > 3 ) {
+	public function bannerURL()
+	{
+		if( strlen($this->bannerURL) > 3 )
+		{
 			return $this->bannerURL;
 		}
 		return Config::defaultUserBanner;
@@ -141,4 +146,3 @@ class User extends NKTableRow
 	
 	
 }
-?>
