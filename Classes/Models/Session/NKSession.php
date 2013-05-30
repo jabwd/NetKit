@@ -11,17 +11,22 @@ class NKSession
 
 	public static function currentUser()
 	{
-		// return the cached instance if it exists
-		if( $GLOBALS['user'] )
+		static $user = NULL;
+		
+		if( $user )
 		{
-			return $GLOBALS['user'];
+			return $user;
 		}
 		
 		// get a new user instance
 		if( array_key_exists('userID', $_SESSION) && $_SESSION['userID'] > 0 )
 		{
-			$GLOBALS['user'] = Users::defaultTable()->find($_SESSION['userID']);
-			return $GLOBALS['user'];
+			$user = Users::defaultTable()->find($_SESSION['userID']);
+			
+			// mark this user as 'online'
+			NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time) VALUES (".$user->id.", ".time().") ON DUPLICATE KEY UPDATE time=VALUES(time)");
+			
+			return $user;
 		}
 		
 		// at this point either the user is not logged in OR we still have to
@@ -37,7 +42,6 @@ class NKSession
 			{
 				// restore the session
 				$_SESSION['userID'] 	= (int)$user->id;
-				$GLOBALS['user'] 		= $user;
 				
 				// renew the cookie
 				$time = time()+60*60*24*30;
