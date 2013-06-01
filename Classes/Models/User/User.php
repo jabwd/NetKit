@@ -47,16 +47,21 @@ class User extends NKTableRow
 	 * Returns:		a User instance connected to this username/password combination
 	 *				returns null on failure
 	 */
-	public static function login($username,$password) {
-		if( strlen($username) > 0 && strlen($password) > 0 ) {
+	public static function login($username, $password)
+	{
+		if( strlen($username) > 0 && strlen($password) > 0 )
+		{
 			$users = Users::defaultTable();
 			$result = $users->findWhere("username = ?",$username);
-			if( count($result) < 1 ) {
+			if( count($result) < 1 )
+			{
 				return NULL;
 			}
 			$user = $result[0];
-			if( $user->salt && strlen($user->salt) > 2 ) {
-				if( $user->password == hash("sha512", $password.$user->salt."Aab12021XH") ) {
+			if( $user->salt && strlen($user->salt) > 2 )
+			{
+				if( $user->password == hash("sha512", $password.$user->salt."Aab12021XH") )
+				{
 					return $user;
 				}
 			}
