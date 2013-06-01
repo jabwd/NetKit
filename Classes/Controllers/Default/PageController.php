@@ -14,6 +14,7 @@ class PageController extends NKActionController
 {
 	public function handleRequest($request = null)
 	{
+		$this->_request = $request;
 		$this->view = new NKView('page/'.$request->actionName, $this, 'NetKit/Classes/Views/templates/');
 		return $this->view->pageExists();
 	}

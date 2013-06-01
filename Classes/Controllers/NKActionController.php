@@ -12,27 +12,38 @@ class NKActionController {
 	// and handle the action's output
 	public $view;
 	
-	// this one is made private in favor of the singleton NKWebsite
-	// making it private makes it easy to spot usage in code
-	private $website;
+	/**
+	 * When handleRequest is called this one is populated with the request
+	 * so that it can be accessed later by calling request
+	 */
+	protected $_request;
 	
 	/**
-	 * Description:	this method handles an incoming NKRequset, creates
-	 *				a view for this controller using the given controllerName
-	 *				and action name.
+	 * Handles the given NKRequest instance and creates a view
+	 * for the given request. Returns false when the view
+	 * cannot be created properly.
 	 *
-	 * Returns:		false when we cannot find / create the view
+	 * @return boolean returns whether the page exists or not
 	 */
-	public function handleRequest($request = null) {
-		$this->view = new NKView($request->controllerName.'/'.$request->actionName, $this);
+	public function handleRequest($request = null)
+	{
+		$this->_request 	= $request;
+		$this->view 		= new NKView($request->controllerName.'/'.$request->actionName, $this);
 		return $this->view->pageExists();
 	}
 	
 	/**
-	 * Description:	this method gives easy access to the current request object
-	 *				to make it easier to get certain values out of the request
+	 * Returns the request currently associated with this action controller. If it does not have
+	 * one it will return the one found on NKWebsite
+	 *
+	 * @return NKRequest $currentRequest
 	 */
-	public function request() {
+	public function request()
+	{
+		if( $this->_request )
+		{
+			return $this->_request;
+		}
 		return NKWebsite::sharedWebsite()->request;
 	}
 }

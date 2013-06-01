@@ -55,6 +55,11 @@ class NKCacheManager
 		return $this->_backingStore->valueForKey($key);
 	}
 	
+	public function removeValueForKey($key)
+	{
+		return $this->_backingStore->removeValueForKey($key);
+	}
+	
 	public function purge()
 	{
 		$this->_backingStore->purge();

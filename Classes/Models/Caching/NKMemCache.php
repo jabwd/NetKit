@@ -36,6 +36,11 @@ class NKMemCache extends NKCache
 		$this->memCache->set($key,$value);
 	}
 	
+	public function removeValueForKey($key)
+	{
+		$this->memCache->delete($key);
+	}
+	
 	public function purge()
 	{
 		$this->memCache->flush();

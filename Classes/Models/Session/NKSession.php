@@ -8,21 +8,21 @@ class NKSession
 {
 	const CookieUserIDKey 		= "UserID";
 	const CookieLoginHashKey 	= "LoginHash";
+	
+	protected static $user = NULL;
 
 	public static function currentUser()
 	{
-		static $user = NULL;
-		
-		if( $user )
+		if( self::$user )
 		{
-			return $user;
+			return self::$user;
 		}
 		
 		// get a new user instance
 		if( array_key_exists('userID', $_SESSION) && $_SESSION['userID'] > 0 )
 		{
 			$user = Users::defaultTable()->find($_SESSION['userID']);
-			
+			self::$user = $user;
 			// mark this user as 'online'
 			NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time) VALUES (".$user->id.", ".time().") ON DUPLICATE KEY UPDATE time=VALUES(time)");
 			
@@ -35,6 +35,8 @@ class NKSession
 		if( $userID > 0 )
 		{
 			$user = Users::defaultTable()->find($userID);
+			self::$user = $user;
+			
 			$hash = hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
 			
 			// verify the cookie
@@ -50,6 +52,10 @@ class NKSession
 				
 				// return the instance, done here
 				return $user;
+			}
+			else
+			{
+				throw new Exception("An error occured while trying to restore your session");
 			}
 		}
 		
@@ -127,7 +133,7 @@ class NKSession
 		if( $user != NULL )
 		{
 			$_SESSION['userID'] 	= $user->id;
-			$GLOBALS['user'] 		= $user;
+			self::$user = $user;
 			
 			if( $retain )
 			{
