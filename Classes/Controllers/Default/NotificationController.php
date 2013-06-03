@@ -10,11 +10,35 @@ class NotificationController extends NKActionController
 
 	public function viewAction()
 	{
-		$notifications = new Notifications();
-		$notification = $notifications->find($this->request()->ID);
-		$notification->viewed = true;
+		$currentUser = NKSession::currentUser();
+		
+		$notification 			= Notifications::defaultTable()->findMain();
+		$notification->viewed 	= true;
+		
+		// check for permissions
+		if( !$currentUser || $currentUser->id != $notification->userID )
+		{
+			throw new NotAllowedException();
+		}
+		
 		$notification->save();
 		
 		$notification->goToPage();
+	}
+	
+	public function markAction()
+	{
+		$currentUser = NKSession::currentUser();
+		
+		$notification = Notifications::defaultTable()->findMain();
+		$notification->viewed = true;
+		
+		// check for permissions
+		if( !$currentUser || $currentUser->id != $notification->userID )
+		{
+			throw new NotAllowedException();
+		}
+		
+		$notification->save();
 	}
 }

@@ -24,7 +24,7 @@ class NKSession
 			$user = Users::defaultTable()->find($_SESSION['userID']);
 			self::$user = $user;
 			// mark this user as 'online'
-			NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time) VALUES (".$user->id.", ".time().") ON DUPLICATE KEY UPDATE time=VALUES(time)");
+			NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time, IP) VALUES (".$user->id.", ".time().", \"".NKRequest::getRequestIP()."\") ON DUPLICATE KEY UPDATE time=VALUES(time), IP=VALUES(IP)");
 			
 			return $user;
 		}
@@ -52,10 +52,6 @@ class NKSession
 				
 				// return the instance, done here
 				return $user;
-			}
-			else
-			{
-				throw new Exception("An error occured while trying to restore your session");
 			}
 		}
 		
