@@ -8,25 +8,28 @@ class NKSession
 {
 	const CookieUserIDKey 		= "UserID";
 	const CookieLoginHashKey 	= "LoginHash";
-	
-	protected static $user = NULL;
 
 	public static function currentUser()
 	{
-		if( self::$user )
+		$user = $GLOBALS['user'];
+		if( $user )
 		{
-			return self::$user;
+			return $user;
 		}
 		
 		// get a new user instance
 		if( array_key_exists('userID', $_SESSION) && $_SESSION['userID'] > 0 )
 		{
 			$user = Users::defaultTable()->find($_SESSION['userID']);
-			self::$user = $user;
-			// mark this user as 'online'
-			NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time, IP) VALUES (".$user->id.", ".time().", \"".NKRequest::getRequestIP()."\") ON DUPLICATE KEY UPDATE time=VALUES(time), IP=VALUES(IP)");
-			
-			return $user;
+			if( $user )
+			{
+				$GLOBALS['user'];
+				
+				// mark this user as 'online'
+				NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time, IP) VALUES (".$user->id.", ".time().", \"".NKRequest::getRequestIP()."\") ON DUPLICATE KEY UPDATE time=VALUES(time), IP=VALUES(IP)");
+				
+				return $user;
+			}
 		}
 		
 		// at this point either the user is not logged in OR we still have to
@@ -35,7 +38,7 @@ class NKSession
 		if( $userID > 0 )
 		{
 			$user = Users::defaultTable()->find($userID);
-			self::$user = $user;
+			$GLOBALS['user'];
 			
 			$hash = hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
 			
@@ -115,7 +118,7 @@ class NKSession
 			$notifications 	= new Notifications();
 			return $notifications->findWhere("userID = ? AND viewed=0",$userID);
 		}
-		return null;
+		return NULL;
 	}
 	
 	
@@ -129,7 +132,7 @@ class NKSession
 		if( $user != NULL )
 		{
 			$_SESSION['userID'] 	= $user->id;
-			self::$user = $user;
+			$GLOBALS['user'] = $user;
 			
 			if( $retain )
 			{
@@ -157,8 +160,8 @@ class NKSession
 	 */
 	public static function logout()
 	{
-		$_SESSION['userID'] = -1;
 		unset($GLOBALS['user']);
+		unset($_SESSION['userID']);
 		setcookie(self::CookieLoginHashKey, "", time()-1, "/", Config::domainName);
 		setcookie(self::CookieUserIDKey, "", time()-1, "/", Config::domainName);
 	}
