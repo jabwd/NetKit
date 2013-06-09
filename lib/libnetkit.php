@@ -100,14 +100,16 @@ function cacheForDirectory($dir)
 		$filePath = $dir.'/'.$file;
 		
 		// don't make us go back in the file system :P
-		if( $file === "." || $file === ".." ) {
+		if( $file === "." || $file === ".." )
+		{
 			continue;
 		}
 			
 		$pathParts = pathinfo($filePath);
 		
 		// ignore non-php files
-		if( $pathParts['extension'] != 'php' && !is_dir($filePath) ) {
+		if( $pathParts['extension'] != 'php' && !is_dir($filePath) )
+		{
 			continue;
 		}
 			
@@ -129,31 +131,57 @@ function cacheForDirectory($dir)
 
 
 /**
- * Description:	this function wraps redirecting to a new page
- *				which makes the code nicer to write and easier
- *				to understand
- *
- *	Returns:	void
+ * Wraps in the redirecting stuff of PHP
+ * in a handy small function you can call
  */
-function redirect($redirect) {
+function redirect($redirect)
+{
 	header("location: ".$redirect);
 	exit; // done here, save the server some time.
 }
 
 /**
- * Description:	Function which in my opinion is missing in PHP
+ * Similar to str_replace but then makes sure
+ * it is only executed once
  *
- * Returns:		the new string with the $needle replaced with $replace
+ * @return string the resulting string after the find and replace
  */
-function str_replace_once($needle, $replace, $haystack) { 
+function str_replace_once($needle, $replace, $haystack)
+{ 
 	$pos = strpos($haystack, $needle);
-	if( $pos === false ) {
+	if( $pos === false )
+	{
     	return $haystack; 
     }
     return substr_replace($haystack, $replace, $pos, strlen($needle)); 
 }
 
-function getMicroTime() {
+/**
+ * getMicroTime() returns a timestamp in miliseconds
+ *
+ * @return long timestamp in miliseconds since the unix epoch
+ */
+function getMicroTime()
+{
 	$tstart = explode(" ",microtime());
 	return ($tstart[1] + $tstart[0]);
+}
+
+/**
+ * Checks the given string for the given minimum and maximum
+ * string length. Used for user input control
+ *
+ * @param string 	$string the string to check
+ * @param int	 	$minimum the minimum length of the string
+ * @param int		$maximum the maximum length of the string
+ * @return boolean 	whether the string is valid or not
+ */
+function checkStringLength($string, $minimum, $maximum)
+{
+	$len = strlen($string);
+	if( $len > $maximum || $len < $minimum )
+	{
+		return false;
+	}
+	return true;
 }
