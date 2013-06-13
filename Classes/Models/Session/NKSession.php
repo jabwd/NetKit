@@ -23,7 +23,7 @@ class NKSession
 			$user = Users::defaultTable()->find($_SESSION['userID']);
 			if( $user )
 			{
-				$GLOBALS['user'];
+				$GLOBALS['user'] = $user;
 				
 				// mark this user as 'online'
 				NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time, IP) VALUES (".$user->id.", ".time().", \"".NKRequest::getRequestIP()."\") ON DUPLICATE KEY UPDATE time=VALUES(time), IP=VALUES(IP)");
@@ -38,7 +38,7 @@ class NKSession
 		if( $userID > 0 )
 		{
 			$user = Users::defaultTable()->find($userID);
-			$GLOBALS['user'];
+			$GLOBALS['user'] = $user;
 			
 			$hash = hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
 			

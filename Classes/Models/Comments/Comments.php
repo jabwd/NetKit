@@ -5,7 +5,10 @@ class Comments extends NKTable
 	public $rowClass	= "Comment";
 	
 	public $extraTable = array(
-		'Users'=>'authorID'
+		'authorID' => array(
+			'Users',
+			'author'
+		)
 	);
 	
 	/**
@@ -19,8 +22,8 @@ class Comments extends NKTable
 	{
 		if( $type > 0 && $id > 0 )
 		{
-			self::defaultTable()->setSingleSort('created ASC');
-			return self::defaultTable()->findWhere("contentType = ? AND contentID = ?", $type, $id);
+			return self::defaultTable()->fetchAll("contentType=".(int)$type." AND contentID=".(int)$id);
 		}
+		return NULL;
 	}
 }

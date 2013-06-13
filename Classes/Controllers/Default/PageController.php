@@ -19,17 +19,10 @@ class PageController extends NKActionController
 		return $this->view->pageExists();
 	}
 	
-	/**
-	 * Fetches the current page object
-	 * if an id is given in the current NKRequest
-	 *
-	 * @return Page the Page instance
-	 */
 	protected function getPage()
 	{
-		$pages = new Pages();
-		$page = $pages->findMain();
-		if( ! $page )
+		$page = Pages::defaultTable()->findMain();
+		if( !$page )
 		{
 			throw new PageNotFoundException();
 		}

@@ -15,8 +15,6 @@ class PrivatemessageController extends NKActionController
 	
 	public function indexAction()
 	{
-		echo Messages::defaultTable()->executeQuery();
-		exit;
 	}
 	
 	public function inboxAction()

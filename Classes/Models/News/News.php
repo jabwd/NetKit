@@ -6,6 +6,9 @@ class News extends NKTable {
 	public $rowClass 	= "NewsItem";
 	
 	public $extraTable = array(
-		'Users'=>'authorID'
+		'authorID' => array(
+			'Users',
+			'author'
+		)
 	);
 }
