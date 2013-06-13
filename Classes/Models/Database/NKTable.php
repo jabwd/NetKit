@@ -111,7 +111,7 @@ class NKTable {
 		// a join on other tables. Thus we are adding the new columns
 		// to the select and create queryConstraints ( for the where clause )
 		// and tablenames for the FROM clause
-		if( is_array($this->extraTable) )
+		if( $this->extraTable )
 		{
 			$tables			= array();
 			$tableCount 	= 0;
@@ -195,46 +195,34 @@ class NKTable {
 		{
 			while( $row = mysql_fetch_array($result) )
 			{
-				$instances = array();
+				$instances = NULL;
 				$self = new $this->rowClass($this);
 				
-				foreach($row as $key=>$value)
+				$key = $this->tableName."_X_";
+				foreach($this->tableLayout as $columnName)
 				{
-					if( is_numeric($key) )
+					$self->$columnName = $row[$key.$columnName];
+				}
+				
+				if( $this->extraTable )
+				{
+					$tableCount = 0;
+					foreach($this->extraTable as $table)
 					{
-						continue;
-					}
-					
-					$tableName 	= explode("_X_", $key);
-					$column		= $tableName[1];
-					$tableName 	= $tableName[0];
-					
-					if( $tableName == $this->tableName )
-					{
-						$self->$column = $value;
-					}
-					else
-					{
-						$instance = $instances[$tableName];
-						if( !$instance )
+						$tableKey 		= $table[1];
+						$table	  		= 'x'.$tableCount;
+						$tableInstance 	= $tableClasses[$table];
+						
+						$instance = new $tableInstance->rowClass($tableInstance);
+						$key = $tableInstance->tableName.'_X_';
+						foreach($tableInstance->tableLayout as $columnName)
 						{
-							$tableInstance 		= $tableClasses[$tableName];
-							$instance 			= new $tableInstance->rowClass($tableInstance);
-							$instance->_alias 	= $tableInstance->_alias;
-							$instances[$tableName] = $instance;
+							$instance->$columnName = $row[$key.$columnName];
 						}
-						$instance->$column = $value;
+						$self->$tableKey = $instance;
+						$tableCount++;
 					}
 				}
-				
-				foreach($instances as $instance)
-				{
-					$name = $instance->_alias;
-					$self->$name = $instance;
-					unset($instance->_alias);
-				}
-				
-				unset($instances);
 				
 				$finalResult[] = $self;
 			}
