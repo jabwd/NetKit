@@ -23,7 +23,7 @@ require_once 'NetKit/Classes/Views/default/NKMainView.php';
 
 class NKWebsite
 {
-	const NetKitVersion = "0.12.0";
+	const NetKitVersion = "0.15.0";
 
 	private static $_sharedInstance;
 	private $_controller;

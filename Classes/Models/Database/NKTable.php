@@ -90,7 +90,7 @@ class NKTable {
 	 *						like a sort or order
 	 * @return Object or anything really, depending no the query
 	 */
-	public function executeQuery($where = "", $tail = "")
+	public function fetchAll($where = "", $tail = "")
 	{
 		$query = "SELECT ";
 		
@@ -271,15 +271,10 @@ class NKTable {
 		$id = (int)$id;
 		if( $id > 0 && $this->rowClass )
 		{
-			$array = $this->executeQuery($this->tableName.'.'.$this->primaryKey.'='.$id);
+			$array = $this->fetchAll($this->tableName.'.'.$this->primaryKey.'='.$id);
 			return $array[0];
 		}
 		return NULL;
-	}
-	
-	public function fetchAll($where = "", $tail = "")
-	{
-		return $this->executeQuery($where, $tail);
 	}
 	
 	/**
@@ -324,7 +319,7 @@ class NKTable {
 				$where = str_replace_once("?", $value, $where);
 			}
 		}
-		$result = $this->executeQuery($where);
+		$result = $this->fetchAll($where);
 		return $result;
 	}
 	
