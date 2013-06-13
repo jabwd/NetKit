@@ -153,7 +153,7 @@ class NKTable {
 		
 		// Properly add the FROM clause with all the required tables
 		// and their new nicknames to make sure nothing interferes
-		$query .= " FROM ".$this->tableName;
+		$query .= " FROM ".$name;
 		if( $tableNames )
 		{
 			foreach($tableNames as $table)
@@ -198,7 +198,7 @@ class NKTable {
 				$instances = NULL;
 				$self = new $this->rowClass($this);
 				
-				$key = $this->tableName."_X_";
+				$key = $name."_X_";
 				foreach($this->tableLayout as $columnName)
 				{
 					$self->$columnName = $row[$key.$columnName];
@@ -214,7 +214,7 @@ class NKTable {
 						$tableInstance 	= $tableClasses[$table];
 						
 						$instance = new $tableInstance->rowClass($tableInstance);
-						$key = $tableInstance->tableName.'_X_';
+						$key = $table.'_X_';
 						foreach($tableInstance->tableLayout as $columnName)
 						{
 							$instance->$columnName = $row[$key.$columnName];
