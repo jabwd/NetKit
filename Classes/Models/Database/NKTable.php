@@ -25,17 +25,18 @@ class NKTable {
 	 * different functions. Rather than passing it through in parameters you can use
 	 * the singleton accessor instead.
 	 */
-	public static function defaultTable() {
+	public static function defaultTable()
+	{
 		static $instance;
 		$className = get_called_class();
-		if( $instance == NULL ) {
+		if( $instance == NULL )
+		{
 			$instance = new $className;
 		}
 		return $instance;
 	}
 	
-	
-	public function NKTable($recache = false)
+	public function __construct()
 	{
 		if( !$this->tableName ) 
 		{
@@ -45,55 +46,212 @@ class NKTable {
 		
 		
 		// get the tablelayout from cache
-		$key = "db:".$this->tableName;
+		$key 	= "db:".$this->tableName;
 		$cached = NKMemCache::sharedCache()->valueForKey($key);
 		if( $cached )
 		{
 			$this->tableLayout 	= $cached['layout'];
 			$this->primaryKey 	= $cached['primary'];
 		}
-		if( count($this->tableLayout) > 0 ) {
-			return; // skip the table discovery process, 
-					// user defined or cached the table layout for us.
-		}
 		
-		// query the database for our table layout
-		$database = NKDatabase::sharedDatabase();
-		$result = $database->query("DESCRIBE ".$this->tableName);
-		if( $result && mysql_num_rows($result) > 0 )
+		// Determine whether we still need to discover the content
+		// or layout of the table we are using
+		if( count($this->tableLayout) < 1 )
 		{
-			$layout = array();
-			while($row = mysql_fetch_array($result))
-			{
-				// fetched a field
-				$layout[] = $row['Field'];
-				
-				// determine whether its a primary key or not
-				if( $row['Key'] === 'PRI' ) {
-					$this->primaryKey = $row['Field'];
-				}
-			}
-			$this->tableLayout = $layout;
+			// query the database for our table layout
+			$database 	= NKDatabase::sharedDatabase();
+			$result 	= $database->query("DESCRIBE ".$this->tableName);
 			
-			// cache the layout in memcache
-			NKMemCache::sharedCache()->setValueForKey(array(
-				'primary'=>$this->primaryKey,
-				'layout'=>$layout
-			), $key);
-		}
-		else
-		{
-			die("<b>Error:</b> Unable to describe table for table ".$this->tableName);
+			// parse the result and write it to cache
+			if( $result && mysql_num_rows($result) > 0 )
+			{
+				$layout = array();
+				while($row = mysql_fetch_array($result))
+				{
+					// fetched a field
+					$layout[] = $row['Field'];
+					
+					// determine whether its a primary key or not
+					if( $row['Key'] === 'PRI' ) {
+						$this->primaryKey = $row['Field'];
+					}
+				}
+				$this->tableLayout = $layout;
+				
+				// cache the layout in memcache
+				NKMemCache::sharedCache()->setValueForKey(array(
+					'primary'=>$this->primaryKey,
+					'layout'=>$layout
+				), $key);
+			}
+			else
+			{
+				throw new Exception("Unable to determine table layout, something went wrong with the database", 500);
+			}
 		}
 	}
 	
-	private function handleOutput($result) {
-		if( !$result ) {
+	/**
+	 * The executeQuery generates a query, execs
+	 * the given query and handles the resulting data
+	 *
+	 *
+	 * @param string $tail your own addons to the query
+	 *						like a sort or order
+	 * @return Object or anything really, depending no the query
+	 */
+	public function executeQuery($tail = "")
+	{
+		$query = "SELECT ";
+		
+		// Add the columns of 'self' to the current query
+		// With a good prefix so they do not interfere with any
+		// added later
+		$layout = $this->tableLayout;
+		$column	= array_shift($layout);
+		$name	= $this->tableName;
+		$query .= $name.'.'.$column.' as '.$name.'_X_'.$column;
+		foreach($layout as $column)
+		{
+			$query .= ", ".$name.'.'.$column.' as '.$name.'_X_'.$column;
+		}
+		
+		
+		// if an extratable property is set it means that we need to do
+		// a join on other tables. Thus we are adding the new columns
+		// to the select and create queryConstraints ( for the where clause )
+		// and tablenames for the FROM clause
+		if( is_array($this->extraTable) )
+		{
+			$tables			= array();
+			$tableCount 	= 0;
+			foreach($this->extraTable as $key=>$extraTable)
+			{
+				$extraTableName = $extraTable[0];
+				
+				// create the table instance for the given tableName
+				$tableInstance 			= new $extraTableName();
+				$layout					= $tableInstance->tableLayout;
+				if( !$layout )
+				{
+					throw new Exception("Cannot find model for ".$extraTableName, 500);
+				}
+				
+				// create the new nickname for the given table
+				// this is "xN" where N is the number of secondary table
+				// we are currently looping through
+				$tableName = 'x'.$tableCount;
+				
+				
+				// add the columns
+				$layout = $tableInstance->tableLayout;
+				foreach($layout as $column)
+				{
+					$query .= ", ".$tableName.'.'.$column.' as '.$tableName.'_X_'.$column;
+				}
+				
+				// create some additional stuff so we do not have to loop again later
+				// on in the code below
+				$queryConstraints[] 		= $name.'.'.$key.'='.$tableName.'.'.$tableInstance->primaryKey;
+				$tableNames[] 				= $tableInstance->tableName.' as '.$tableName;
+				$tableInstance->_alias		= $extraTable[1];
+				$tableClasses[$tableName] 	= $tableInstance;
+				
+				$tableCount++;
+			}
+		}
+		
+		// Properly add the FROM clause with all the required tables
+		// and their new nicknames to make sure nothing interferes
+		$query .= " FROM ".$this->tableName;
+		if( $tableNames )
+		{
+			foreach($tableNames as $table)
+			{
+				$query .= ", ".$table;
+			}
+		}
+		
+		// Add constraints to actually make the join happen
+		// We use the given fields together with the primary keys
+		// of the tables to create these constraints
+		if( $queryConstraints )
+		{
+			$query .= " WHERE ";
+			$constraint = array_shift($queryConstraints);
+			$query .= $constraint;
+			foreach($queryConstraints as $constraint)
+			{
+				$query .= " AND ".$constraint;
+			}
+		}
+		
+		// add the tail if any
+		$query .= $tail;
+		
+		
+		$result = NKDatabase::sharedDatabase()->query($query);
+		if( $result && mysql_num_rows($result) > 0 )
+		{
+			while( $row = mysql_fetch_array($result) )
+			{
+				$instances = array();
+				$self = new $this->rowClass($this);
+				
+				foreach($row as $key=>$value)
+				{
+					if( is_numeric($key) )
+					{
+						continue;
+					}
+					
+					$tableName 	= explode("_X_", $key);
+					$column		= $tableName[1];
+					$tableName 	= $tableName[0];
+					
+					if( $tableName == $this->tableName )
+					{
+						$self->$column = $value;
+					}
+					else
+					{
+						$instance = $instances[$tableName];
+						if( !$instance )
+						{
+							$tableInstance 		= $tableClasses[$tableName];
+							$instance 			= new $tableInstance->rowClass($tableInstance);
+							$instance->_alias 	= $tableInstance->_alias;
+							$instances[$tableName] = $instance;
+						}
+						$instance->$column = $value;
+					}
+				}
+				
+				foreach($instances as $instance)
+				{
+					$name = $instance->_alias;
+					$self->$name = $instance;
+					unset($instance->_alias);
+				}
+				
+				unset($instances);
+				
+				$finalResult[] = $self;
+			}
+		}
+		return $finalResult;
+	}
+	
+	private function handleOutput($result)
+	{
+		if( !$result )
+		{
 			return NULL;
 		}
 		
 		// loop through all the result rows we have
-		if( mysql_num_rows($result) > 0 ) {
+		if( mysql_num_rows($result) > 0 )
+		{
 			while( $row = mysql_fetch_row($result) ) {
 				$class = new $this->rowClass($this);
 				for($i=0;$i<count($this->tableLayout);$i++) {
@@ -107,7 +265,8 @@ class NKTable {
 		return $output;
 	}
 	
-	public function simpleQuery($query) {
+	public function simpleQuery($query)
+	{
 		$result = NKDatabase::exec($query);
 		return $this->handleOutput($result);
 	}
