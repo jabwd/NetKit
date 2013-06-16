@@ -298,8 +298,7 @@ class NKTable {
 				$where = str_replace_once("?", $value, $where);
 			}
 		}
-		$result = $this->fetchAll($where);
-		return $result;
+		return $this->fetchAll($where);
 	}
 	
 	public function insert($object)

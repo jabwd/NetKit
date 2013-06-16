@@ -8,75 +8,65 @@ class NKSession
 {
 	const CookieUserIDKey 		= "UserID";
 	const CookieLoginHashKey 	= "LoginHash";
-
+	
 	public static function currentUser()
 	{
-		$user = $GLOBALS['user'];
+		static $user;
 		if( $user )
 		{
 			return $user;
 		}
 		
-		// get a new user instance
-		if( array_key_exists('userID', $_SESSION) && $_SESSION['userID'] > 0 )
+		if( $_SESSION['userID'] > 0 )
 		{
 			$user = Users::defaultTable()->find($_SESSION['userID']);
 			if( $user )
 			{
-				$GLOBALS['user'] = $user;
-				
-				// mark this user as 'online'
-				NKDatabase::sharedDatabase()->query("INSERT INTO online (userID, time, IP) VALUES (".$user->id.", ".time().", \"".NKRequest::getRequestIP()."\") ON DUPLICATE KEY UPDATE time=VALUES(time), IP=VALUES(IP)");
+				NKDatabase::exec("INSERT INTO online (userID, time, IP) VALUES (".$user->id.", ".time().", \"".NKRequest::getRequestIP()."\") ON DUPLICATE KEY UPDATE time=VALUES(time), IP=VALUES(IP)");
 				
 				return $user;
+			}
+			else
+			{
+				unset($_SESSION['userID']);
 			}
 		}
 		
-		// at this point either the user is not logged in OR we still have to
-		// re-build the session using the rememberMe cookie
-		/*$userID = (int)$_COOKIE[self::CookieUserIDKey];
+		$userID = (int)$_COOKIE[self::CookieUserIDKey];
 		if( $userID > 0 )
 		{
 			$user = Users::defaultTable()->find($userID);
-			$GLOBALS['user'] = $user;
+			$hash = self::userRetainCookieHash($user);
 			
-			$hash = hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
-			
-			// verify the cookie
 			if( $hash === $_COOKIE[self::CookieLoginHashKey] )
 			{
-				// restore the session
-				$_SESSION['userID'] 	= (int)$user->id;
-				
-				// renew the cookie
-				$time = time()+60*60*24*30;
-				setcookie(self::CookieLoginHashKey, $hash, $time, "/", Config::domainName);
-				setcookie(self::CookieUserIDKey, $user->id, $time, "/", Config::domainName);
-				
-				// return the instance, done here
+				$_SESSION['userID'] = (int)$user->id;
+				self::setPersistentCookie(self::CookieLoginHashKey, $hash);
+				self::setPersistentCookie(self::CookieUserIDKey, $user->id);
 				return $user;
 			}
-		}*/
-		
-		// user is not logged in
+			else
+			{
+				// When a different IP is used the above will fail
+				// but when we leave user set recalling currentUser()
+				// will actually return a user instance, this prevents that
+				$user = NULL;
+			}
+		}
 		return NULL;
 	}
 	
-	/*
-	 * Description:	this method will return true when the current user instance exists and either is an
-	 *				highAdmin or has the given $permission
-	 *				For important permissions, like banning users, cache should be turned off by passing false
-	 *				as a second parameter. This way it will directly query the database in order to figure out
-	 *				whether the rights of the user haven't been revoked during his current session
-	 *
-	 * Returns:		true when the user has the permission, false when he doesn't
-	 */
+	private static function userRetainCookieHash($user)
+	{
+		return hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
+	}
+	
+	
 	public static function access($permission, $useCache = true)
 	{
 		$currentUser = self::currentUser();
-		if( ! $currentUser )
+		if( !$currentUser )
 		{
-			// no user session so we can stop here already
 			return;
 		}
 		
@@ -84,86 +74,57 @@ class NKSession
 		
 		if( $useCache == true && $permissions[$permission] === $currentUser->id )
 		{
-			// at this point we know we have the cached permission
 			return true;
 		}
 		
-		// if we get to here we got something uncached.
 		$p = new Permissions();
-		if( $p->permissionForUserID($permission,$currentUser->id) )
+		if( $p->permissionForUserID($permission, $currentUser->id) )
 		{
 			$permissions[$permission] = $currentUser->id;
 			$_SESSION['permissions'] = $permissions;
 			return true;
 		}
-		else
-		{
-			// TODO: Cache this output?
-		}
-		
-		// the user does not have any permissions, return false ( the most likely case of all )
 		return false;
 	}
 	
-	/*
-	 * Description: get a list of notifications for the current user
-	 *
-	 * Returns:		an array containing Notification instances
-	 */
 	public static function notifications()
 	{
-		if( NKSession::currentUser() )
+		$userID = self::currentUser()->id;
+		if( $userID > 0 )
 		{
-			$userID 		= NKSession::currentUser()->id;
-			$notifications 	= new Notifications();
-			return $notifications->findWhere("userID = ? AND viewed=0",$userID);
+			return Notifications::defaultTable()->findWhere("userID = ? AND viewed=0", $userID);
 		}
 		return NULL;
 	}
 	
-	
-	/*
-	 * Description: logs in a user with the username / password combination
-	 *				returns null on failure, user on success.
-	 */
 	public static function login($username, $password, $retain = false)
 	{
 		$user = User::login($username, $password);
 		if( $user != NULL )
 		{
-			$_SESSION['userID'] 	= $user->id;
-			$GLOBALS['user'] = $user;
+			$_SESSION['userID'] = $user->id;
 			
 			if( $retain )
 			{
-				// create a cookie for a retained session
-				$hash = hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
-				setcookie(self::CookieLoginHashKey, $hash, time()+60*60*24*30, "/", Config::domainName);
-				setcookie(self::CookieUserIDKey, $user->id, time()+60*60*24*30, "/", Config::domainName);
+				$hash = self::userRetainCookieHash($user);
+				self::setPersistentCookie(self::CookieLoginHashKey, $hash);
+				self::setPersistentCookie(self::CookieUserIDKey, $user->id);
 			}
 			
-			// protect against duplicate accounts
 			if( !$_COOKIE['createdAccount'] )
 			{
-				NKSession::setPersistentCookie('createdAccount', time());
+				self::setPersistentCookie('createdAccount', time());
 			}
 		}
 		return $user;
 	}
 	
-	
-	
-	/*
-	 * Description: destroys the current user session by unsetting the userID value
-	 *				redirecting the user to a new page should be done by whatever is calling
-	 *				the logout method.
-	 */
 	public static function logout()
 	{
 		unset($GLOBALS['user']);
 		unset($_SESSION['userID']);
-		setcookie(self::CookieLoginHashKey, "", time()-1, "/", Config::domainName);
-		setcookie(self::CookieUserIDKey, "", time()-1, "/", Config::domainName);
+		self::unsetPersistentCookie(self::CookieLoginHashKey);
+		self::unsetPersistentCookie(self::CookieUserIDKey);
 	}
 	
 	public static function updatePreviousPage()
@@ -191,5 +152,15 @@ class NKSession
 	public static function setPersistentCookie($key, $value)
 	{
 		setcookie($key, $value, time()+60*60*24*30, "/", Config::domainName);
+	}
+	
+	/**
+	 * Unsets a persistent cookie set under the given key
+	 *
+	 * @param string $key
+	 */
+	public static function unsetPersistentCookie($key)
+	{
+		setcookie($key, "", time()-5, "/", Config::domainName);
 	}
 }
