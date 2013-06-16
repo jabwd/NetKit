@@ -3,7 +3,7 @@
  * [NKTable a class that makes use of NKDatabase in order to
  *			make accessing databases easier]
  *
- * Version: 0.1
+ * Version: 1.0
  * Author: 	Antwan van Houdt
  * Created: 18-12-2012
  */
@@ -13,7 +13,6 @@ class NKTable {
 	public $primaryKey;		// table primary key ( auto discovered )
 	public $tableLayout;	// table layout ( auto discovered )
 	public $extraTable;		// used for joins
-	
 	
 	public static function defaultTable()
 	{
@@ -44,31 +43,23 @@ class NKTable {
 			$this->primaryKey 	= $cached['primary'];
 		}
 		
-		// Determine whether we still need to discover the content
-		// or layout of the table we are using
+		// discover the table layout if needed
 		if( count($this->tableLayout) < 1 )
 		{
-			// query the database for our table layout
-			$database 	= NKDatabase::sharedDatabase();
-			$result 	= $database->query("DESCRIBE ".$this->tableName);
-			
-			// parse the result and write it to cache
+			$result = NKDatabase::exec("DESCRIBE ".$this->tableName);
 			if( $result && mysql_num_rows($result) > 0 )
 			{
 				$layout = array();
 				while($row = mysql_fetch_array($result))
 				{
-					// fetched a field
 					$layout[] = $row['Field'];
-					
-					// determine whether its a primary key or not
-					if( $row['Key'] === 'PRI' ) {
+					if( $row['Key'] === 'PRI' )
+					{
 						$this->primaryKey = $row['Field'];
 					}
 				}
 				$this->tableLayout = $layout;
 				
-				// cache the layout in memcache
 				NKMemCache::sharedCache()->setValueForKey(array(
 					'primary'=>$this->primaryKey,
 					'layout'=>$layout
@@ -190,7 +181,7 @@ class NKTable {
 		$query .= ' '.$tail;
 		
 		
-		$result = NKDatabase::sharedDatabase()->query($query);
+		$result = NKDatabase::exec($query);
 		if( $result && mysql_num_rows($result) > 0 )
 		{
 			while( $row = mysql_fetch_array($result) )
@@ -358,7 +349,7 @@ class NKTable {
 				$cnt++;
 			}
 			$query .= ")";
-			NKDatabase::sharedDatabase()->query($query);
+			NKDatabase::exec($query);
 			return mysql_insert_id();
 		}
 		else
@@ -390,7 +381,7 @@ class NKTable {
 				$cnt++;
 			}
 			$query .= " WHERE ".$this->primaryKey."=".$id;
-			NKDatabase::sharedDatabase()->query($query);
+			NKDatabase::exec($query);
 		}
 	}
 	
@@ -400,7 +391,7 @@ class NKTable {
 		$id 	= (int)$object->$key;
 		if( $id > 0 && count($this->tableLayout) > 0 )
 		{
-			NKDatabase::sharedDatabase()->query("DELETE FROM ".$this->tableName." WHERE ".$key."=".$id);
+			NKDatabase::exec("DELETE FROM ".$this->tableName." WHERE ".$key."=".$id);
 		}
 	}
 	

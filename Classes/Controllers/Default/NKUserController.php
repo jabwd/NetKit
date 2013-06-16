@@ -11,10 +11,11 @@ class NKUserController extends NKActionController
 	
 	public function indexAction()
 	{
-		$list = Users::defaultTable()->fetchAll(NULL, "ORDER BY created DESC LIMIT 0,30");
+		$users	= Users::defaultTable();
+		$list = $users->fetchAll(NULL, "ORDER BY created DESC LIMIT 0,30");
 		
 		$this->view->userList 	= $list;
-		$this->view->userCount 	= Users::defaultTable()->count();
+		$this->view->userCount 	= $users->count();
 	}
 	
 	public function viewAction()
@@ -23,29 +24,21 @@ class NKUserController extends NKActionController
 		$profileUser = NULL;
 		if( $this->_user && $userID == $this->_user->id )
 		{
-			// its our own profile
 			$profileUser = $this->_user;
 			$this->view->isSelf = true;
 		}
 		else
 		{
-			$users = new Users();
-			$profileUser = $users->find($userID);
+			$profileUser = Users::defaultTable()->find($userID);
 			
-			// only 1 visit per session, login required
-			if( !$_SESSION['viewed'][$profileUser->id] && $this->_user != NULL )
+			if( $profileUser && !$_SESSION['viewed'][$profileUser->id] && $this->_user != NULL )
 			{
-				// update the hits count, just to make sure that it really is an int
-				// we cast it and re-assign the value, then save to the database
 				$hits = (int)$profileUser->profileHits;
 				$hits++;
 				$profileUser->profileHits	= $hits;
 				$profileUser->save();
-				
-				// save it for the next visit, stop abuse!
 				$_SESSION['viewed'][$profileUser->id] = true;
 			}
-			
 			$this->view->isSelf = false;
 		}
 		
@@ -54,17 +47,10 @@ class NKUserController extends NKActionController
 	
 	public function editAction()
 	{
-		// handle an edit request
-		if( $_POST['edit'] )
-		{
-			
-		}
-	
-		$this->view->user = $profileUser;
 	}
 	
-	public function loginAction() {
-		// the user is already logged in, ignore this request
+	public function loginAction()
+	{
 		if( NKSession::currentUser() )
 		{
 			redirect('/');
@@ -72,21 +58,16 @@ class NKUserController extends NKActionController
 		
 		if( $_POST['login'] && !$this->_user )
 		{
-			$username = $_POST['username'];
-			$password = $_POST['password'];
-			$retain = false;
-			if( $_POST['rememberMe'] ) {
-				$retain = true;
-			}
+			$username 	= $_POST['username'];
+			$password 	= $_POST['password'];
+			$retain		= ($_POST['rememberMe'] != NULL);
 			if( NKSession::login($username, $password, $retain) )
 			{
-				// login successful
 				$this->view->loginSuccess = true;
 				NKSession::toPreviousPage();
 			}
 			else
 			{
-				// login failed
 				$this->view->loginSuccess = false;
 				$this->view->loginFailed = true;
 			}
@@ -105,7 +86,6 @@ class NKUserController extends NKActionController
 	{
 		NKSession::logout();
 		redirect("/");
-		//redirect(NKSession::previousPage());
 	}
 	
 	public function registerAction()

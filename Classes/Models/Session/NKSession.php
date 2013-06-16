@@ -34,7 +34,7 @@ class NKSession
 		
 		// at this point either the user is not logged in OR we still have to
 		// re-build the session using the rememberMe cookie
-		$userID = (int)$_COOKIE[self::CookieUserIDKey];
+		/*$userID = (int)$_COOKIE[self::CookieUserIDKey];
 		if( $userID > 0 )
 		{
 			$user = Users::defaultTable()->find($userID);
@@ -56,7 +56,7 @@ class NKSession
 				// return the instance, done here
 				return $user;
 			}
-		}
+		}*/
 		
 		// user is not logged in
 		return NULL;

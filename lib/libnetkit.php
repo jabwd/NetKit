@@ -1,51 +1,33 @@
 <?php
-//----------------------------------------------------------//
-// Autoloading												//
-
-// Potential problem: What happens if the amount of classes
-// stored in $GLOBALS['classes'] becomes really big?
-// Potential fix: use the caching more directly ( probably slower )
-// and therefore do not get PHP to copy a huge array into its runtime
-spl_autoload_register(function($className) {
-	if( $GLOBALS['classes'][$className] ) {
+spl_autoload_register(function($className)
+{
+	if( $GLOBALS['classes'][$className] )
+	{
 		require_once $GLOBALS['classes'][$className];
 		return;
-	} else {
-		// just in case
-		if( $className == 'PageNotFoundException' ) {
-			throw new Exception('Page not found', 404);
-		}
-
-		// default behavior
-		if( Config::debugMode ) {
+	}
+	else
+	{
+		if( Config::debugMode )
+		{
 			throw new Exception("Cannot find class ".$className, 500);
 		}
-		throw new PageNotFoundException();
+		throw new Exception('Page not found', 404);
 	}
 });
 
-
-//----------------------------------------------------------//
-// Error handling											//
-
 function handleException($exception)
 {
-	$_SESSION['exception'] = serialize($exception);
-	if( Config::debugMode ) {
-		print_r($exception);
-		exit;
-	}
-	if( headers_sent() )
+	if( headers_sent() || Config::debugMode )
 	{
 		print_r($exception);
 		exit;
 	}
 	else
 	{
+		$_SESSION['exception'] = serialize($exception);
 		redirect('/error/index/'.$exception->getCode());
 	}
-	
-	// TODO: Why is libnetkit handling this ?
 	print_r($exception->getMessage());
 	print_r($exception->getTrace());
 	exit;
@@ -83,7 +65,7 @@ function createWebsiteCache()
 	if( $memcache )
 	{
 		$cache = cacheForDirectory(".");
-		$memcache->set("websiteClasses",$cache);
+		$memcache->set("websiteClasses22",$cache);
 		return;
 	}
 	$cache = cacheForDirectory(".");
@@ -154,17 +136,6 @@ function str_replace_once($needle, $replace, $haystack)
     	return $haystack; 
     }
     return substr_replace($haystack, $replace, $pos, strlen($needle)); 
-}
-
-/**
- * getMicroTime() returns a timestamp in miliseconds
- *
- * @return long timestamp in miliseconds since the unix epoch
- */
-function getMicroTime()
-{
-	$tstart = explode(" ",microtime());
-	return ($tstart[1] + $tstart[0]);
 }
 
 /**
