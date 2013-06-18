@@ -27,9 +27,16 @@ else
 		$content = "\"".$this->message->content."\"\n\n";
 	}
 	$username = $_POST['username'];
-	if( !$username && $this->message )
+	if( !$username && ($this->message || $this->username) )
 	{
-		$username = $this->message->author->username;
+		if( $this->username )
+		{
+			$username = $this->username;
+		}
+		else
+		{
+			$username = $this->message->author->username;
+		}
 	}
 	?>
 	<div class="contentBox">

@@ -32,9 +32,9 @@ class PrivatemessageController extends NKActionController
 	
 	public function createAction()
 	{
-		$messageID = $this->request()->ID;
-		$message   = Messages::defaultTable()->find($messageID);
-		$user = NKSession::currentUser();
+		$messageID 	= $this->request()->ID;
+		$message   	= Messages::defaultTable()->find($messageID);
+		$user 		= NKSession::currentUser();
 		if( !$user )
 		{
 			redirect('/user/login');
@@ -84,6 +84,7 @@ class PrivatemessageController extends NKActionController
 			}
 		}
 		
+		$this->view->username = $this->request()->valueForKey("username");
 		$this->view->message = $message;
 	}
 	
