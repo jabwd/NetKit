@@ -2,7 +2,8 @@
 if( NKSession::access('pages.manage') ) {
 	?>
 	<div class="toolbar">
-		<a class="item settings" href="/page/edit/<?=$this->page->id?>"></a>
+		<a class="item red" href="/page/delete/<?=$this->page->id?>">Delete page</a>
+		<a class="item blue" href="/page/edit/<?=$this->page->id?>">Edit page</a>
 	</div>
 	<?php
 }

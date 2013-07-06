@@ -22,7 +22,14 @@ class Comments extends NKTable
 	{
 		if( $type > 0 && $id > 0 )
 		{
-			return self::defaultTable()->fetchAll("contentType=".(int)$type." AND contentID=".(int)$id);
+			$limit = "LIMIT 0,".Config::CommentsPerPage	;
+			$page = (int)NKWebsite::sharedWebsite()->request->valueForKey("page");
+			if( $page > 0 )
+			{
+				$page--;
+				$limit = "LIMIT ".($page*Config::CommentsPerPage).",".Config::CommentsPerPage;
+			}
+			return self::defaultTable()->fetchAll("contentType=".(int)$type." AND contentID=".(int)$id, $limit);
 		}
 		return NULL;
 	}
