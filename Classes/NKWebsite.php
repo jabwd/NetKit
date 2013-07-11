@@ -50,11 +50,11 @@ class NKWebsite
 	public static function start()
 	{
 		$cacheManager = NKCacheManager::defaultManager();
-		$classes = $cacheManager->valueForKey("NetKit_Autoloader_Classes22");
+		$classes = $cacheManager->valueForKey("NetKit.Classes.".Config::domainName);
 		if( !$classes || Config::debugMode )
 		{
 			$classes = cacheForDirectory(".");
-			$cacheManager->setValueForKey($classes, "NetKit_Autoloader_Classes22");
+			$cacheManager->setValueForKey($classes, "NetKit.Classes.".Config::domainName);
 			
 			if( !$classes )
 			{

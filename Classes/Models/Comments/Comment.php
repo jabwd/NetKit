@@ -17,30 +17,12 @@ class Comment extends NKTableRow
 			{
 				return; // stop here
 			}
-			
-			NKSession::currentUser()->addReputation(Config::CommentCreateReputation);
-			
-			// limit the amount of comments a user can create
 			$count = (int)$_SESSION['userCommentCount'];
 			$count++;
 			$_SESSION['userCommentCount'] = $count;
 			$_SESSION['userLastCommentStamp'] = time();
 		}
 		return parent::save();
-	}
-	
-	/**
-	 * Makes sure that the author's reputation is decreased properly
-	 * for the deleting of the comment ( either by himself or an admin )
-	 */ 
-	public function delete()
-	{
-		$currentUser = NKSession::currentUser();
-		if( $currentUser )
-		{
-			$currentUser->removeReputation(Config::CommentCreateReputation);
-		}
-		return parent::delete();
 	}
 	
 	/**
@@ -56,8 +38,7 @@ class Comment extends NKTableRow
 		if( $user )
 		{
 			// certain users are always allowed to post comments
-			if( $user->reputation > Config::CommentUnlimitedReputation ||
-				NKSession::access('comments.manage') )
+			if(	NKSession::access('comments.manage') )
 			{
 				return true;
 			}

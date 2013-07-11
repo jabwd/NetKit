@@ -51,28 +51,6 @@ set_error_handler("myErrorHandler");
 //----------------------------------------------------------//
 // Standard functions										//
 
-/*
- * Description: this function creates a cache file that allows the NKWebsite class to load all the
- *				dependencies in one go. This means that the system only needs to load 1 single file
- *				which if it really has to go QUICK can be loaded into RAM memory to handle requests
- *				more quickly.
- */
-function createWebsiteCache()
-{
-	// try to use MemCached
-	$memcache = new Memcache;
-	$memcache->addserver("localhost", 11211)or die("Cannot connect memcache");
-	if( $memcache )
-	{
-		$cache = cacheForDirectory(".");
-		$memcache->set("websiteClasses22",$cache);
-		return;
-	}
-	$cache = cacheForDirectory(".");
-	$data = json_encode($cache);
-	file_put_contents("Cache/classes.json", $data);
-}
-
 function cacheForDirectory($dir)
 {
 	$files 	= scandir($dir);

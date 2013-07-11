@@ -35,7 +35,7 @@ class NKTable {
 		
 		
 		// get the tablelayout from cache
-		$key 	= "db:".$this->tableName;
+		$key 	= Config::domainName.".db.".$this->tableName;
 		$cached = NKMemCache::sharedCache()->valueForKey($key);
 		if( $cached )
 		{
