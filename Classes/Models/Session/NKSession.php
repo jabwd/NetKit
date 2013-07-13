@@ -133,14 +133,19 @@ class NKSession
 		$_SESSION['current'] 		= $_SERVER['REQUEST_URI'];
 	}
 	
-	public static function previousPage()
+	public static function navigateLoginBack()
 	{
-		return $_SESSION['previousURI'];
+		redirect($_SESSION['previousURI']);
+	}
+	
+	public static function navigateBack()
+	{
+		redirect($_SESSION['current']);
 	}
 	
 	public static function toPreviousPage()
 	{
-		redirect(self::previousPage());
+		self::navigateLoginBack();
 	}
 	
 	/**
