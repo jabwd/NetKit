@@ -61,10 +61,11 @@ class NKUserController extends NKActionController
 			$username 	= $_POST['username'];
 			$password 	= $_POST['password'];
 			$retain		= ($_POST['rememberMe'] != NULL);
+			
 			if( NKSession::login($username, $password, $retain) )
 			{
 				$this->view->loginSuccess = true;
-				NKSession::toPreviousPage();
+				NKSession::navigateBackTwice();
 			}
 			else
 			{
@@ -78,7 +79,7 @@ class NKUserController extends NKActionController
 		}
 		else if( $this->_user )
 		{
-			NKSession::toPreviousPage();
+			NKSession::navigateBackTwice();
 		}
 	}
 	
@@ -88,7 +89,7 @@ class NKUserController extends NKActionController
 		redirect("/");
 	}
 	
-	public function registerAction()
+	public function registerAction($login = true)
 	{
 		if( $_POST['register'] )
 		{
@@ -148,15 +149,18 @@ class NKUserController extends NKActionController
 				$user->profileHits	= 0;
 				$user->save();
 				
-				// log the user in
-				$retain = false;
-				if( $_POST['rememberMe'] )
+				if( $login )
 				{
-					$retain = true;
+					// log the user in
+					$retain = false;
+					if( $_POST['rememberMe'] )
+					{
+						$retain = true;
+					}
+					NKSession::login($username, $password, $retain);
 				}
-				NKSession::login($username, $password, $retain);
 				
-				$this->view->user 		= NKSession::currentUser();
+				$this->view->user 		= $user;
 				$this->view->success 	= true;
 			}
 			else

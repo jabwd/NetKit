@@ -33,7 +33,6 @@ class NotificationController extends NKActionController
 		$notification = Notifications::defaultTable()->findMain();
 		$notification->viewed = true;
 		
-		// check for permissions
 		if( !$currentUser || $currentUser->id != $notification->userID )
 		{
 			throw new NotAllowedException();

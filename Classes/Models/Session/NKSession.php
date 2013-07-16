@@ -61,7 +61,15 @@ class NKSession
 		return hash("sha512", NKRequest::getRequestIP().$user->username.$user->password.Config::rememberMeHash);
 	}
 	
-	
+	/**
+	 * Determines whether the current logged in user has access
+	 * to the given permission string
+	 *
+	 * @param String $permission
+	 * @param Boolean $useCache whether to re-verify with the db
+	 
+	 * @return Boolean $permission
+	 */
 	public static function access($permission, $useCache = true)
 	{
 		$currentUser = self::currentUser();
@@ -87,16 +95,16 @@ class NKSession
 		return false;
 	}
 	
-	public static function notifications()
-	{
-		$userID = self::currentUser()->id;
-		if( $userID > 0 )
-		{
-			return Notifications::defaultTable()->findWhere("userID = ? AND viewed=0", $userID);
-		}
-		return NULL;
-	}
-	
+	/**
+	 * Creates a new user session using the
+	 * provided username and password combination
+	 *
+	 * @param String $username
+	 * @param String $password
+	 * @param Boolean $retain whether to use persistence
+	 
+	 * @return NKUser $user
+	 */
 	public static function login($username, $password, $retain = false)
 	{
 		$user = User::login($username, $password);
@@ -111,6 +119,8 @@ class NKSession
 				self::setPersistentCookie(self::CookieUserIDKey, $user->id);
 			}
 			
+			// a simple mechanic in order to try and make it more difficult for people
+			// to create multiple accounts
 			if( !$_COOKIE['createdAccount'] )
 			{
 				self::setPersistentCookie('createdAccount', time());
@@ -119,6 +129,11 @@ class NKSession
 		return $user;
 	}
 	
+	/**
+	 * Destroys the current user session
+	 *
+	 * @return void
+	 */
 	public static function logout()
 	{
 		unset($GLOBALS['user']);
@@ -127,25 +142,43 @@ class NKSession
 		self::unsetPersistentCookie(self::CookieUserIDKey);
 	}
 	
+	/**
+	 * Gets called at the end of the NKWebsite runtime
+	 * in order to update the session state in such a way that
+	 * we can both store the previous and the one before that
+	 * In some cases you need to go back twice
+	 *
+	 * @return void
+	 */
 	public static function updatePreviousPage()
 	{
 		$_SESSION['previousURI'] 	= $_SESSION['current'];
 		$_SESSION['current'] 		= $_SERVER['REQUEST_URI'];
 	}
 	
-	public static function navigateLoginBack()
-	{
-		redirect($_SESSION['previousURI']);
-	}
-	
+	/**
+	 * Navigates back to the previous page
+	 * Code execution *should* stop when you call
+	 * this method, do not expect it to return
+	 *
+	 * @return void
+	 */
 	public static function navigateBack()
 	{
 		redirect($_SESSION['current']);
 	}
 	
-	public static function toPreviousPage()
+	/**
+	 * Navigates back to the page before the previous page
+	 * This is especiallyl handy when you want to redirect to the page
+	 * a user was one after he logged in, as the login page it self
+	 * is also a page and therefore seen as the 'previous' page
+	 *
+	 * @return void
+	 */
+	public static function navigateBackTwice()
 	{
-		self::navigateLoginBack();
+		redirect($_SESSION['previousURI']);
 	}
 	
 	/**
@@ -153,16 +186,21 @@ class NKSession
 	 * 
 	 * @param string key of the cookie
 	 * @param string value of the cookie
+	 *
+	 * @return void
 	 */
 	public static function setPersistentCookie($key, $value)
 	{
-		setcookie($key, $value, time()+60*60*24*30, "/", Config::domainName);
+		// a cookie for 1 month ( 60*60*24*30 )
+		setcookie($key, $value, time()+2592000, "/", Config::domainName);
 	}
 	
 	/**
 	 * Unsets a persistent cookie set under the given key
 	 *
 	 * @param string $key
+	 *
+	 * @return void
 	 */
 	public static function unsetPersistentCookie($key)
 	{
