@@ -45,10 +45,6 @@ class NKUserController extends NKActionController
 		$this->view->user = $profileUser;
 	}
 	
-	public function editAction()
-	{
-	}
-	
 	public function loginAction()
 	{
 		if( NKSession::currentUser() )

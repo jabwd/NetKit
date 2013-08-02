@@ -13,7 +13,7 @@ class NKRequest
 	 * usually the value of the current primary
 	 * key or something similar
 	 */
-	public $ID = -1;
+	public $ID = 0;
 	
 	/*
 	 * Stores the controller name of the current request
@@ -26,7 +26,7 @@ class NKRequest
 	public $actionName;
 	
 	/*
-	 * Hashtable of valueName and its value
+	 * Hashtable of key and its value
 	 */
 	private $values = array();
 	
@@ -35,16 +35,15 @@ class NKRequest
 	 * Since you might be using HIPHOP-PHP ( Which is natively supported by NetKit )
 	 * you are going to need to modify NGINX or whatever you are using to return
 	 * the real request_uri in a proxy header
-	 * @returns the current request_URI
+	 *
+	 * @return String current request URI
 	 */
-	public static function getURI() {
-		// this means we have HIPHOP running
+	public static function getURI()
+	{
 		if( array_key_exists("HTTP_HIPHOP", $_SERVER) && $_SERVER['HTTP_HIPHOP'] === 'YES' ) 
 		{
 			return $_SERVER['HTTP_REALURI'];
 		}
-		
-		// not using HIPHOP, fall back to default behavior
 		return $_SERVER['REQUEST_URI'];
 	}
 	
@@ -62,55 +61,57 @@ class NKRequest
 	{
 		if( !$URL ) 
 		{	
-			$URL = NKRequest::getURI();
+			$URL = self::getURI();
 		}
 		
 		// determine the page controller we should use now.
 		// the basic pattern we use is:
 		// /controller/action/id/varName/varValue/var2Name/var2Value
 		// scan the string
-		$parts 		= explode("/", substr($URL, 1));
+		$parts 		= explode("/", $URL);
 		$cnt		= count($parts);
 		
-		if( $cnt > 0 )
+		if( $cnt > 1 )
 		{
-			$this->controllerName 	= $parts[0];
+			$this->controllerName 	= $parts[1];
 			
 			// normally we'd not have to check for hte length but
 			// if we're using HPHP-VM then some stricter coding guidelines 
 			// are required
-			if( $cnt > 1 ) 
+			if( $cnt > 2 ) 
 			{
-				$this->actionName	 	= $parts[1];
-			}
-			if( $cnt > 2 ) {
-				$this->ID = (int)$parts[2];
-			}
-			
-			$idx = 3;
-			if( $this->ID == 0 && is_string($parts[2]) && strlen($parts[2]) > 0 ) {
-				$this->ID 	= 0;
-				$idx 		= 2;
-			}
-			
-			
-			// continue scanning for URL key / values
-			if( $cnt > $idx ) {
-				// $i starts with 3 since we can skip the first 3
-				// Then we go in steps of 2 ( key + value )
-				for($i=$idx;($i+1)<$cnt;$i+=2) {
-					$this->values[$parts[$i]] = $parts[$i+1]; 
+				$this->actionName = $parts[2];
+				
+				if( $cnt > 3 )
+				{
+					$this->ID = (int)$parts[3];
+					
+					$idx = 4;
+					if( $this->ID == 0 && $this->actionName )
+					{
+						$idx = 3;
+					}
+					
+					// continue scanning for URL key / values
+					// if we have the space for it
+					if( $cnt > $idx )
+					{
+						// $i starts with 3 since we can skip the first 3
+						// Then we go in steps of 2 ( key + value )
+						for($i=$idx;($i+1)<$cnt;$i+=2)
+						{
+							$this->values[$parts[$i]] = $parts[$i+1]; 
+						}
+					}
 				}
 			}
 		}
 		
-		// if no controller name or action name is specified it is _ALWAYS_ the index
-		if( !$this->controllerName ) 
+		if( !$this->controllerName )
 		{
 			$this->controllerName = 'index';
 		}
-		
-		if( !$this->actionName ) 
+		if( !$this->actionName )
 		{
 			$this->actionName = 'index';
 		}
