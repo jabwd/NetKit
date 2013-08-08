@@ -25,7 +25,7 @@ class NKActionController {
 	 *
 	 * @return boolean returns whether the page exists or not
 	 */
-	public function handleRequest($request = null)
+	public function handleRequest($request = NULL)
 	{
 		$this->_request 	= $request;
 		$this->view 		= new NKView($request->controllerName.'/'.$request->actionName, $this);

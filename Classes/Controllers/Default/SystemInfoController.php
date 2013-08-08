@@ -6,8 +6,10 @@ class SystemInfoController extends NKActionController
 		$this->name = "System information";
 	}
 	
-	public function handleRequest($request = null) {
-		$this->view = new NKView('systeminfo/index', $this, 'NetKit/Classes/Views/templates/');
+	public function handleRequest($request = null)
+	{
+		$this->_request	= $request;
+		$this->view 	= new NKView('systeminfo/index', $this, 'NetKit/Classes/Views/templates/');
 		return $this->view->pageExists();
 	}
 	

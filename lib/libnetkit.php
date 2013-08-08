@@ -39,7 +39,6 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 	{
 		return; // this error code is not included in error_reporting
 	}
-
 	throw new Exception($errstr . " (file $errfile, line $errline)", 0);
 	return false; // let PHP deal with anything not handled here
 }
