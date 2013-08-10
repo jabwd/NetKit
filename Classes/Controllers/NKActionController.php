@@ -1,21 +1,10 @@
 <?php
-class NKActionController {
-	// the name is used for generating the page title
-	public $name 	= null;
-	
-	// define the main layout to use for the current page / view
-	// can be left null if you want to use default
-	// which is defined in your website's config
-	public $layout 	= null;
-	
-	// an instantiated NKView object that is used to draw the current page
-	// and handle the action's output
+class NKActionController
+{
+	public $name 	= NULL;
+	public $layout 	= NULL;
 	public $view;
 	
-	/**
-	 * When handleRequest is called this one is populated with the request
-	 * so that it can be accessed later by calling request
-	 */
 	protected $_request;
 	
 	/**
@@ -33,8 +22,8 @@ class NKActionController {
 	}
 	
 	/**
-	 * Returns the request currently associated with this action controller. If it does not have
-	 * one it will return the one found on NKWebsite
+	 * Returns the request currently associated with this action controller. 
+	 * If it does not have one it will return the one found on NKWebsite
 	 *
 	 * @return NKRequest $currentRequest
 	 */

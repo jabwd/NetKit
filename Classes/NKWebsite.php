@@ -11,8 +11,7 @@
 require_once 'NetKit/lib/libnetkit.php';
 require_once 'Website/Config.php';
 
-// also get some packages we are going to use nomatter what
-// so we can save our autoloader some time and sweat
+
 require_once 'NetKit/Classes/Models/Requests/NKRequest.php';
 require_once 'NetKit/Classes/Models/Session/NKSession.php';
 
@@ -23,12 +22,16 @@ require_once 'NetKit/Classes/Views/default/NKMainView.php';
 
 class NKWebsite
 {
-	const NetKitVersion = "0.16.2";
+	const NetKitVersion = "0.17.0";
 	
 	private static $_sharedInstance;
 	private $_controller;
 	
 	public 	$request;
+	
+	private function __construct()
+	{
+	}
 	
 	public static function sharedWebsite()
 	{
@@ -39,13 +42,11 @@ class NKWebsite
 		return self::$_sharedInstance;
 	}
 	
-	private function __construct()
-	{
-	}
-	
 	/**
 	 * Starts up the website, only method you need to call
 	 * in your index.php
+	 *
+	 * @return void
 	 */
 	public static function start()
 	{
@@ -70,6 +71,8 @@ class NKWebsite
 	 * Creates a new NKRequest instance and handles
 	 * the current incoming request. Creates the controller
 	 * calls its action and renders the new view
+	 *
+	 * @return void
 	 */
 	public function handleRequest()
 	{
@@ -91,6 +94,12 @@ class NKWebsite
 		NKSession::updatePreviousPage();
 	}
 	
+	/**
+	 * Returns the title that should be inside the
+	 * <title> tag on the main layout view
+	 *
+	 * @return String final title string
+	 */
 	public function getTitle()
 	{
 		if( strlen($this->_controller->name) > 0 )
