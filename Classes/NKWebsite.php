@@ -104,7 +104,7 @@ class NKWebsite
 	{
 		if( strlen($this->_controller->name) > 0 )
 		{
-			return Config::title . ' - ' . $this->_controller->name;
+			return $this->_controller->name.' - '.Config::title;
 		}
 		return Config::title;
 	}
