@@ -23,7 +23,7 @@ SystemInfo
 	</tr>
 	<tr>
 	   <td>Database:</td>
-	   <td><?php echo str_ireplace("-1~dotdeb.0", "", NKDatabase::sharedDatabase()->databaseEngineName()); ?></td>
+	   <td><?php echo str_ireplace("-1~dotdeb.0", "", NKDatabase::sharedDatabase()->engineName()); ?></td>
 	</tr>
 	<tr><td>Server OS:</td><td><?php echo php_uname('s'); ?></td></tr>
 	<tr><td>&nbsp; </td><td></td></tr>

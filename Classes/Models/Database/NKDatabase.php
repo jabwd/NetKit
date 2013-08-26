@@ -1,5 +1,6 @@
 <?php
-class NKDatabase {
+class NKDatabase
+{
 	public $debug 		= false;
 	
 	protected $_queryCount 	= 0;
@@ -49,10 +50,10 @@ class NKDatabase {
 	 */
 	public function query($query)
 	{
+		$this->_queryCount++;
 		if( $this->debug )
 		{
 			echo $query;
-			$this->_queryCount++;
 			$time 	= microtime(); 
 			$time 	= explode(" ", $time); 
 			$time 	= $time[1] + $time[0]; 
@@ -78,6 +79,15 @@ class NKDatabase {
 			return mysql_query($query, $this->_connection);
 		}
 		return NULL;
+	}
+	
+	public static function exec($query)
+	{
+		if( !self::$_sharedInstance )
+		{
+			self::defaultDB();
+		}
+		return self::$_sharedInstance->query($query);
 	}
 	
 	/**
@@ -122,13 +132,9 @@ class NKDatabase {
 		}
 		return mysql_real_escape_string($input);
 	}
-
-	public static function exec($query)
+	
+	public function engineName()
 	{
-		if( !self::$_sharedInstance )
-		{
-			self::defaultDB();
-		}
-		return self::$_sharedInstance->query($query);
+		return "MySQL 5";
 	}
 }
