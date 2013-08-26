@@ -98,14 +98,22 @@ class NKWebsite
 	 * Returns the title that should be inside the
 	 * <title> tag on the main layout view
 	 *
-	 * @return String final title string
+	 * @return String title string
 	 */
-	public function getTitle()
+	public function title()
 	{
-		if( strlen($this->_controller->name) > 0 )
+		if( $this->_controller->name )
 		{
 			return $this->_controller->name.' - '.Config::title;
 		}
 		return Config::title;
+	}
+	
+	/**
+	 * Deprecated: use "title()" instead
+	 */
+	public function getTitle()
+	{
+		$this->title();
 	}
 }
