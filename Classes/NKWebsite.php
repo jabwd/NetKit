@@ -114,6 +114,6 @@ class NKWebsite
 	 */
 	public function getTitle()
 	{
-		$this->title();
+		return $this->title();
 	}
 }
