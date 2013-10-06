@@ -1,7 +1,7 @@
 <?php
 if( NKSession::access('pages.manage') ) {
 	?>
-	<div class="toolbar">
+	<div id="toolbar">
 		<a class="item red" href="/page/delete/<?=$this->page->id?>">Delete page</a>
 		<a class="item blue" href="/page/edit/<?=$this->page->id?>">Edit page</a>
 	</div>
@@ -9,7 +9,7 @@ if( NKSession::access('pages.manage') ) {
 }
 ?>
 <div class="contentBox">
-<div class="newsTitle"><?=$this->page->title?></div>
+<div class="pageTitle"><?=$this->page->title?></div>
 <?php
 $parser = new BBCodeParser($this->page->content);
 echo nl2br($parser->result());

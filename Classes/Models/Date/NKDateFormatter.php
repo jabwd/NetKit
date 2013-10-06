@@ -4,7 +4,8 @@
  * performance in big lists of stuff and to reduce object creation
  * for such lists, can't have that on a high load web page
  */
-class NKDateFormatter {
+class NKDateFormatter
+{
 	protected $timestamp;
 
 	public function __construct($time) 
@@ -29,6 +30,44 @@ class NKDateFormatter {
 	public function deltaDateString() 
 	{
 		return self::simpleDeltaDateString($this->timestamp);
+	}
+	
+	public function reverseDateString()
+	{
+		return self::simpleReverseDateString($this->timestamp);
+	}
+	
+	public static function simpleReverseDateString($timestamp)
+	{
+		$delta = (int)($timestamp-time());
+		
+		$years = floor($delta/31104000);
+		$delta -= $years*31104000;
+		$months = floor($delta/2592000);
+		$delta -= $months*2592000;
+		$days = floor($delta/86400);
+		$delta -= $days*86400;
+		$hours = floor($delta/3600);
+		$delta -= $hours*3600;
+		$minutes = floor($delta/60);
+		$delta -= $minutes*60;
+		
+		// determine which format is relevant
+		if( $years > 0 ) {
+			return 'in '.$years.' '.(($years==1) ? "year":"years");
+		}
+		else if( $months > 0 )
+		{
+			return 'in '.$months.' '.(($months==1) ? "month":"months");
+		} else if( $days > 0 ) {
+			return 'in '.$days.' '.(($days==1) ? "day":"days");
+		} else if( $hours > 0 ) {
+			return 'in '.$hours.' '.(($hours==1) ? "hour":"hours");
+		} else if( $minutes > 0 ) {
+			return 'in '.$minutes.' '.(($minutes==1) ? "minute":"minutes");
+		} else {
+			return 'Just now';
+		}
 	}
 	
 	// TODO: Make this function suck less,
@@ -81,7 +120,8 @@ class NKDateFormatter {
 	 * direct access to the timestamp
 	 * we want to make sure that date & time are done properly
 	 */
-	public function timestamp() {
+	public function timestamp()
+	{
 		return $this->timestamp;
 	}
 }

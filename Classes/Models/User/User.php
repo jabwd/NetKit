@@ -69,8 +69,10 @@ class User extends NKTableRow
 		return NULL;
 	}
 	
-	public function changePassword($oldPassword,$newPassword) {
-		if( User::login($this->username,$oldPassword) ) {
+	public function changePassword($oldPassword,$newPassword)
+	{
+		if( User::login($this->username,$oldPassword) )
+		{
 			$this->password = $this->newHashedPassword($newPassword);
 			$this->save();
 			return true;
@@ -78,13 +80,16 @@ class User extends NKTableRow
 		return false;
 	}
 	
-	public function addReputation($delta) {
+	public function addReputation($delta)
+	{
 		$reputation = (int)$this->reputation;
 		$reputation += $delta;
 		$this->reputation = $reputation;
 		$this->save();
 	}
-	public function removeReputation($delta) {
+	
+	public function removeReputation($delta)
+	{
 		$reputation = (int)$this->reputation;
 		$reputation -= $delta;
 		$this->reputation = $reputation;
@@ -96,11 +101,14 @@ class User extends NKTableRow
 	 *				either the user's nickname or the user's username depedning on user preference and
 	 *				avalailability of the nickname
 	 */
-	public function displayString($showFlag = false) {
+	public function displayString($showFlag = false)
+	{
 		$prefix = '';
 		$suffix = '';
-		if( $showFlag ) {
-			if( ! $this->flag ) {
+		if( $showFlag )
+		{
+			if( ! $this->flag )
+			{
 				$this->flag = 'nl';
 			}
 			$prefix = '<span class="flag" style="background-image:url(\''.Config::resourceFolderPath.'images/flags/'.$this->flag.'.png\');">';
