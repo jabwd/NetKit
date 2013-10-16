@@ -22,7 +22,7 @@ require_once 'NetKit/Classes/Views/default/NKMainView.php';
 
 class NKWebsite
 {
-	const NetKitVersion = "0.18.0";
+	const NetKitVersion = "0.20.0";
 	
 	private static $_sharedInstance;
 	private $_controller;
@@ -64,6 +64,11 @@ class NKWebsite
 		}
 		$GLOBALS['classes'] = $classes;
 		
+		if( $GLOBALS['classes']['BootstrapController'] )
+		{
+			$bootstrap = new BootstrapController();
+		}
+		
 		self::sharedWebsite()->handleRequest();
 	}
 	
@@ -76,6 +81,13 @@ class NKWebsite
 	 */
 	public function handleRequest()
 	{
+		if( Config::forceDomain )
+		{
+			if( $_SERVER['HTTP_HOST'] != Config::domainName )
+			{
+				redirect('http://'.Config::domainName);
+			}
+		}
 		$this->request = new NKRequest();
 		
 		$controllerClass 	= ucfirst($this->request->controllerName).'Controller';
@@ -115,5 +127,14 @@ class NKWebsite
 	public function getTitle()
 	{
 		return $this->title();
+	}
+	
+	public function description()
+	{
+		if( $this->_controller->description )
+		{
+			return $this->_controller->description;
+		}
+		return Config::description;
 	}
 }

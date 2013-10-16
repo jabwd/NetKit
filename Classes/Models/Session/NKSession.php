@@ -152,6 +152,10 @@ class NKSession
 	 */
 	public static function updatePreviousPage()
 	{
+		if( !$_SESSION['current'] )
+		{
+			$_SESSION['current'] = '/';
+		}
 		$_SESSION['previousURI'] 	= $_SESSION['current'];
 		$_SESSION['current'] 		= $_SERVER['REQUEST_URI'];
 	}
@@ -165,6 +169,11 @@ class NKSession
 	 */
 	public static function navigateBack()
 	{
+		if( !$_SESSION['current'] )
+		{
+			$_SESSION['current'] = '/';
+			redirect('/');
+		}
 		redirect($_SESSION['current']);
 	}
 	

@@ -49,7 +49,7 @@ class NKRequest
 	
 	/**
 	 * Same functionality as the getURI() but then for the IP address
-	 * @returns a string containing an IPv4 address
+	 * @return String a string containing an IPv4 address
 	 */
 	public static function getRequestIP() 
 	{
@@ -137,5 +137,19 @@ class NKRequest
 	public function isAjaxRequest() 
 	{
 		return (isset($this->values["ajax"]));
+	}
+	
+	/**
+	 * Reformats the given string into something that you can safely put into an URL
+	 * Use it to add a readable title to view URLs
+	 *
+	 * @param $titleString
+	 *
+	 * @return URL Safe title string
+	 */
+	public static function stringForURLTitle($titleString)
+	{
+		$titleString = str_replace(" ", "-", $titleString);
+		return urlencode($titleString);
 	}
 }

@@ -394,9 +394,13 @@ class NKTable {
 		}
 	}
 	
-	public function count()
+	public function rowCount($where = NULL)
 	{
-		$rows = NKDatabase::exec("SELECT COUNT(*) FROM ".$this->tableName);
+		if( $where )
+		{
+			$where = " WHERE ".$where;
+		}
+		$rows = NKDatabase::exec("SELECT COUNT(*) FROM ".$this->tableName.$where);
 		$rows = mysql_fetch_array($rows);
 		return $rows[0];
 	}
