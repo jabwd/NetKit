@@ -26,14 +26,15 @@ class NKDatabase
 	
 	public function __construct()
 	{
-		$this->_connection = mysql_connect( 
-				Config::databaseHost,
-				Config::databaseUsername,
-				Config::databasePassword
-			);
+		$this->_connection = new mysqli(
+			Config::databaseHost,
+			Config::databaseUsername,
+			Config::databasePassword,
+			Config::databaseName
+		);
 		if( $this->_connection )
 		{
-			mysql_select_db(Config::databaseName, $this->_connection);
+			//mysql_select_db(Config::databaseName, $this->_connection);
 		}
 		else
 		{
@@ -59,7 +60,7 @@ class NKDatabase
 			$time 	= $time[1] + $time[0]; 
 			$time1 	= $time;
 			
-			$result = mysql_query($query, $this->_connection);
+			$result = $this->_connection->query($query);
 			
 			$time 	= microtime(); 
 			$time 	= explode(" ", $time); 
@@ -70,13 +71,13 @@ class NKDatabase
 			
 			if( $result == NULL )
 			{
-				throw new Exception(mysql_error(), 500);
+				throw new Exception($this->_connection->error, 500);
 			}
 			return $result;
 		}
 		else
 		{
-			return mysql_query($query, $this->_connection);
+			return $this->_connection->query($query);
 		}
 		return NULL;
 	}
@@ -88,6 +89,16 @@ class NKDatabase
 			self::defaultDB();
 		}
 		return self::$_sharedInstance->query($query);
+	}
+	
+	/**
+	 * Returns the last inserted row ID
+	 *
+	 * @return integer last inserted row ID
+	 */
+	public function lastInsertID()
+	{
+		return $this->_connection->insert_id;
 	}
 	
 	/**
@@ -130,7 +141,17 @@ class NKDatabase
 		{
 			return self::sanitize(serialize($input));
 		}
-		return mysql_real_escape_string($input);
+		return $this->_connection->escape_string($input);
+	}
+	
+	public function escString($input)
+	{
+		return $this->_connection->escape_string($input);
+	}
+	
+	public static function escapeString($input)
+	{
+		return self::defaultDB()->escString($input);
 	}
 	
 	public function engineName()

@@ -47,10 +47,10 @@ class NKTable {
 		if( count($this->tableLayout) < 1 )
 		{
 			$result = NKDatabase::exec("DESCRIBE ".$this->tableName);
-			if( $result && mysql_num_rows($result) > 0 )
+			if( $result && $result->num_rows > 0 )
 			{
 				$layout = array();
-				while($row = mysql_fetch_array($result))
+				while($row = $result->fetch_assoc())
 				{
 					$layout[] = $row['Field'];
 					if( $row['Key'] === 'PRI' )
@@ -64,6 +64,7 @@ class NKTable {
 					'primary'=>$this->primaryKey,
 					'layout'=>$layout
 				), $key);
+				$result->free();
 			}
 			else
 			{
@@ -81,7 +82,7 @@ class NKTable {
 	 *						like a sort or order
 	 * @return Object or anything really, depending no the query
 	 */
-	public function fetchAll($where = "", $tail = "")
+	public function fetchAll($where = "", $tail = "", $skip = NULL)
 	{
 		$query = "SELECT ";
 		
@@ -94,6 +95,10 @@ class NKTable {
 		$query .= $name.'.'.$column.' as '.$name.'_X_'.$column;
 		foreach($layout as $column)
 		{
+			if( $skip && $skip[$column] == true )
+			{
+				continue;
+			}
 			$query .= ", ".$name.'.'.$column.' as '.$name.'_X_'.$column;
 		}
 		
@@ -182,9 +187,9 @@ class NKTable {
 		
 		
 		$result = NKDatabase::exec($query);
-		if( $result && mysql_num_rows($result) > 0 )
+		if( $result && $result->num_rows > 0 )
 		{
-			while( $row = mysql_fetch_array($result) )
+			while( $row = $result->fetch_assoc() )
 			{
 				$instances = NULL;
 				$self = new $this->rowClass($this);
@@ -289,11 +294,11 @@ class NKTable {
 			{
 				if( is_array($value) )
 				{
-					$value = "'".mysql_real_escape_string(serialize($value))."'";
+					$value = "'".NKDatabase::escapeString(serialize($value))."'";
 				}
 				else if( is_string($value) )
 				{
-					$value = "'".mysql_real_escape_string($value)."'";
+					$value = "'".NKDatabase::escapeString($value)."'";
 				}
 				$where = str_replace_once("?", $value, $where);
 			}
@@ -339,7 +344,7 @@ class NKTable {
 					$comma = "";
 				$value = $object->$tableKey;
 				if( $value && is_string($value) )
-					$value = "'".mysql_real_escape_string($value)."'";
+					$value = "'".NKDatabase::escapeString($value)."'";
 				else if( ! $value )
 					$value = 'null'; // database style!
 					
@@ -349,7 +354,7 @@ class NKTable {
 			}
 			$query .= ")";
 			NKDatabase::exec($query);
-			return mysql_insert_id();
+			return NKDatabase::defaultDB()->lastInsertID();
 		}
 		else
 		{
@@ -376,7 +381,7 @@ class NKTable {
 				{
 					$comma = "";
 				}
-				$query .= $comma.$tableKey."='".mysql_real_escape_string($object->$tableKey)."'";
+				$query .= $comma.$tableKey."='".NKDatabase::escapeString($object->$tableKey)."'";
 				$cnt++;
 			}
 			$query .= " WHERE ".$this->primaryKey."=".$id;
@@ -401,7 +406,7 @@ class NKTable {
 			$where = " WHERE ".$where;
 		}
 		$rows = NKDatabase::exec("SELECT COUNT(*) FROM ".$this->tableName.$where);
-		$rows = mysql_fetch_array($rows);
+		$rows = $rows->fetch_assoc();
 		return $rows[0];
 	}
 }

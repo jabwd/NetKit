@@ -1,5 +1,5 @@
-<div class="headerMenu">
-Create a Private Message
+<div class="titleBar">
+	Create a Private Message
 </div>
 <?php
 if( $this->success )
@@ -41,10 +41,16 @@ else
 	?>
 	<div class="contentBox">
 		<form method="post">
-			<input type="text" value="<?=$username?>" placeholder="Username" name="username"/>
+			<label>
+				To:
+				<input type="text" value="<?=$username?>" placeholder="Username" name="username"/>
+			</label>
 			<br />
 			<br />
-			<input type="text" value="<?=$title?>" placeholder="title" name="title"/>
+			<label>
+				Title:
+				<input type="text" value="<?=$title?>" placeholder="title" name="title"/>
+			</label>
 			<br />
 			<br />
 			<textarea name="content" placeholder="Message"><?=$content?></textarea>

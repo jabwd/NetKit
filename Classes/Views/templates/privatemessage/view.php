@@ -1,5 +1,5 @@
 <div class="contentBox">
-	<div class="newsTitle">
+	<div class="pageTitle">
 		<?=$this->message->title?>
 		<br />
 		<span class="author">Sent by 
@@ -13,6 +13,7 @@
 		echo nl2br($parser->result());
 		?>
 	</div>
+	<br />
 	<br />
 	<a href="/privatemessage/delete/<?=$this->message->id?>" class="button">Delete</a>
 	<a href="/privatemessage/create/<?=$this->message->id?>" class="button">Reply</a>
