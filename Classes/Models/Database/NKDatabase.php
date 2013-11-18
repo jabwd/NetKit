@@ -24,21 +24,34 @@ class NKDatabase
 		return self::defaultDB();
 	}
 	
-	public function __construct()
+	public function __construct($alternativeConnection = NULL)
 	{
-		$this->_connection = new mysqli(
-			Config::databaseHost,
-			Config::databaseUsername,
-			Config::databasePassword,
-			Config::databaseName
-		);
-		if( $this->_connection )
+		if( $alternativeConnection )
 		{
-			//mysql_select_db(Config::databaseName, $this->_connection);
+			$this->_connection = new mysqli(
+				$alternativeConnection['host'],
+				$alternativeConnection['username'],
+				$alternativeConnection['password'],
+				$alternativeConnection['database']
+			);
 		}
 		else
 		{
-			throw new Exception("Unable to connect to MySQL backend ".mysql_error());
+			$this->_connection = new mysqli(
+				Config::databaseHost,
+				Config::databaseUsername,
+				Config::databasePassword,
+				Config::databaseName
+			);
+		}
+		
+		if( $this->_connection )
+		{
+			// success
+		}
+		else
+		{
+			throw new Exception("Unable to connect to MySQL backend");
 		}
 	}
 	
@@ -52,9 +65,12 @@ class NKDatabase
 	public function query($query)
 	{
 		$this->_queryCount++;
-		if( $this->debug )
+		if( Config::debugMode )
 		{
-			echo $query;
+			if( $this->debug )
+			{
+				echo $query;
+			}
 			$time 	= microtime(); 
 			$time 	= explode(" ", $time); 
 			$time 	= $time[1] + $time[0]; 

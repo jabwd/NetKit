@@ -1,6 +1,6 @@
 <?php
 class Users extends NKTable
 {
-	public $tableName 	= "users";
-	public $rowClass 	= "User";
+	public $tableName 		= "users";
+	public $rowClass 		= "User";
 }

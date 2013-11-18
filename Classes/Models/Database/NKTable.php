@@ -7,12 +7,15 @@
  * Author: 	Antwan van Houdt
  * Created: 18-12-2012
  */
-class NKTable {
+class NKTable
+{
 	public $tableName; 		// DB table name
 	public $rowClass;		// PHP Class name of the NKTableRow subclass
 	public $primaryKey;		// table primary key ( auto discovered )
 	public $tableLayout;	// table layout ( auto discovered )
 	public $extraTable;		// used for joins
+	public $databaseName;	// custom database to be used with this table?
+	protected $database;	// custom database instance
 	
 	public static function defaultTable()
 	{
@@ -33,6 +36,17 @@ class NKTable {
 			return;
 		}
 		
+		// determine whether to use a custom database engine
+		if( $this->databaseName )
+		{
+			$this->database = new NKDatabase(array(
+				'host'=>Config::databaseHost,
+				'username'=>Config::databaseUsername,
+				'password'=>Config::databasePassword,
+				'database'=>$this->databaseName
+			));
+		}
+		
 		
 		// get the tablelayout from cache
 		$key 	= Config::domainName.".db.".$this->tableName;
@@ -46,7 +60,7 @@ class NKTable {
 		// discover the table layout if needed
 		if( count($this->tableLayout) < 1 )
 		{
-			$result = NKDatabase::exec("DESCRIBE ".$this->tableName);
+			$result = $this->query("DESCRIBE ".$this->tableName);
 			if( $result && $result->num_rows > 0 )
 			{
 				$layout = array();
@@ -71,6 +85,24 @@ class NKTable {
 				throw new Exception("Unable to determine table layout, something went wrong with the database", 500);
 			}
 		}
+	}
+	
+	protected function query($query)
+	{
+		if( $this->database )
+		{
+			return $this->database->query($query);
+		}
+		return NKDatabase::exec($query);
+	}
+	
+	protected function database()
+	{
+		if( $this->database )
+		{
+			return $this->database;
+		}	
+		return NKDatabase::defaultDB();
 	}
 	
 	/**
@@ -186,7 +218,7 @@ class NKTable {
 		$query .= ' '.$tail;
 		
 		
-		$result = NKDatabase::exec($query);
+		$result = $this->query($query);
 		if( $result && $result->num_rows > 0 )
 		{
 			while( $row = $result->fetch_assoc() )
@@ -222,6 +254,7 @@ class NKTable {
 				
 				$finalResult[] = $self;
 			}
+			$result->free();
 		}
 		return $finalResult;
 	}
@@ -314,7 +347,7 @@ class NKTable {
 			$cnt = 0;
 			foreach($this->tableLayout as $tableKey)
 			{
-				if( $tableKey === $this->primaryKey || $object->$tableKey == null )
+				if( $tableKey === $this->primaryKey || $object->$tableKey == NULL )
 				{
 					continue;
 				}
@@ -334,9 +367,9 @@ class NKTable {
 					continue;
 					
 				// determine whether we need this one
-				if( $object->$tableKey == null )
+				if( $object->$tableKey == NULL )
 				{
-					continue; // do not insert the null values, let the database handle it with default values
+					continue;
 				}
 				
 				$comma = ",";
@@ -353,8 +386,10 @@ class NKTable {
 				$cnt++;
 			}
 			$query .= ")";
-			NKDatabase::exec($query);
-			return NKDatabase::defaultDB()->lastInsertID();
+			$database = $this->database();
+			$result = $database->query($query);
+			$result->free();
+			return $database->lastInsertID();
 		}
 		else
 		{
@@ -385,7 +420,7 @@ class NKTable {
 				$cnt++;
 			}
 			$query .= " WHERE ".$this->primaryKey."=".$id;
-			NKDatabase::exec($query);
+			$this->query($query);
 		}
 	}
 	
@@ -395,7 +430,7 @@ class NKTable {
 		$id 	= (int)$object->$key;
 		if( $id > 0 && count($this->tableLayout) > 0 )
 		{
-			NKDatabase::exec("DELETE FROM ".$this->tableName." WHERE ".$key."=".$id);
+			$this->query("DELETE FROM ".$this->tableName." WHERE ".$key."=".$id);
 		}
 	}
 	
@@ -405,8 +440,9 @@ class NKTable {
 		{
 			$where = " WHERE ".$where;
 		}
-		$rows = NKDatabase::exec("SELECT COUNT(*) FROM ".$this->tableName.$where);
-		$rows = $rows->fetch_assoc();
-		return $rows[0];
+		$result = $this->query("SELECT COUNT(*) as count FROM ".$this->tableName.$where);
+		$rows = $result->fetch_assoc();
+		$result->free();
+		return $rows['count'];
 	}
 }
