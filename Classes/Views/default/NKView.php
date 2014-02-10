@@ -7,15 +7,19 @@ class NKView
 	public function __construct($templateFile = "", $controller = null, $templateBasePath = null)
 	{
 		// offer a default template path
-		if( ! $templateBasePath ) {
+		if( ! $templateBasePath )
+		{
 			$templateBasePath = Config::templatesPath;
 		}
 		
 		// check whether we can open our current template or not
 		$path = $templateBasePath.$templateFile.'.php';
-		if( file_exists($path) && strlen($templateFile) > 0 ) {
+		if( file_exists($path) && strlen($templateFile) > 0 )
+		{
 			$this->_templatePath = $path;
-		} else {
+		}
+		else
+		{
 			throw new PageNotFoundException();
 		}
 		

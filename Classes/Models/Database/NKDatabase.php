@@ -65,37 +65,25 @@ class NKDatabase
 	public function query($query)
 	{
 		$this->_queryCount++;
-		if( Config::debugMode )
+		$time 	= microtime(); 
+		$time 	= explode(" ", $time); 
+		$time 	= $time[1] + $time[0]; 
+		$time1 	= $time;
+		if( $this->debug )
 		{
-			if( $this->debug )
-			{
-				echo $query;
-			}
-			$time 	= microtime(); 
-			$time 	= explode(" ", $time); 
-			$time 	= $time[1] + $time[0]; 
-			$time1 	= $time;
-			
-			$result = $this->_connection->query($query);
-			
-			$time 	= microtime(); 
-			$time 	= explode(" ", $time); 
-			$time 	= $time[1] + $time[0]; 
-			$time2 	= $time;
-			
-			$this->_queryCost += round(($time2-$time1)*1000, 1);
-			
-			if( $result == NULL )
-			{
-				throw new Exception($this->_connection->error, 500);
-			}
-			return $result;
+			echo $query;
 		}
-		else
+		$result = $this->_connection->query($query);
+		if( $result == NULL )
 		{
-			return $this->_connection->query($query);
+			throw new Exception($this->_connection->error, 500);
 		}
-		return NULL;
+		$time 	= microtime(); 
+		$time 	= explode(" ", $time); 
+		$time 	= $time[1] + $time[0]; 
+		$time2 	= $time;
+		$this->_queryCost += round(($time2-$time1)*1000, 1);
+		return $result;
 	}
 	
 	public static function exec($query)

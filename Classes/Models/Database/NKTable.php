@@ -388,7 +388,6 @@ class NKTable
 			$query .= ")";
 			$database = $this->database();
 			$result = $database->query($query);
-			$result->free();
 			return $database->lastInsertID();
 		}
 		else
@@ -397,6 +396,10 @@ class NKTable
 		}
 	}
 	
+	/**
+	 * Updates the given NKTableRow in the database
+	 * by using its primary key as where constraint
+	 */
 	public function update($object)
 	{
 		$key = $this->primaryKey;
@@ -424,6 +427,9 @@ class NKTable
 		}
 	}
 	
+	/**
+	 * Deletes the given object from the backend
+	 */
 	public function delete($object)
 	{
 		$key 	= $this->primaryKey;
@@ -434,6 +440,10 @@ class NKTable
 		}
 	}
 	
+	/**
+	 * Returns the amount of rows for the given
+	 * where clause o the current table/database configuration
+	 */
 	public function rowCount($where = NULL)
 	{
 		if( $where )
