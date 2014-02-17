@@ -2,7 +2,7 @@
 // since NKCacheManager is a required subsystem of NetKit we are
 // not making use of the autoloader here just yet!
 require_once 'NetKit/Classes/Models/Caching/NKCache.php';
-require_once 'NetKit/Classes/Models/Caching/NKMemCache.php';
+require_once 'NetKit/Classes/Models/Caching/NKAPCCache.php';
 
 class NKCacheManager
 {
@@ -24,7 +24,7 @@ class NKCacheManager
 		return self::$_defaultController;
 	}
 	
-	public function __construct($engine = 'memcache')
+	public function __construct($engine = 'apc')
 	{
 		// determine what backing store to use
 		if( $engine === 'apc' )
