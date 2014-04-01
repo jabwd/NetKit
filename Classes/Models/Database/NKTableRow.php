@@ -82,13 +82,14 @@ class NKTableRow
 	 * Validates the current instance according to the standards
 	 * described in the comment section of the table.
 	 *
-	 * @param Reference $errorMessage, if you want to fully describe what went
+	 * @param Reference $errors, if you want to fully describe what went
 	 *					wrong to the user
 	 *
 	 * @returns Boolean true or false		
 	 */
-	public function validate(&$errorMessage = NULL)
+	public function validate(&$errors = NULL)
 	{
+		$errors = array();
 		$tableName = $this->tableName;
 		if( $tableName )
 		{
@@ -96,10 +97,101 @@ class NKTableRow
 			if( $table )
 			{
 				$comments = $table->comments;
-				
+				foreach($comments as $comment)
+				{
+					$value 			= $this->$comment['column'];
+					$constraint 	= $comment['comment'];
+					
+					if( strlen($constraint) > 0 )
+					{	
+						// detect constraint method
+						$pos = strpos($constraint, "[");
+						$key = substr($constraint, 0, $pos);
+						
+						// validate an int constraint
+						if( $key === "int" )
+						{
+							$args = substr($constraint, $pos+1, strlen($constraint)-$pos-2);
+							if( strlen($args) < 1 )
+							{
+								$this->$comment['column'] = (int)$value;
+								echo 'just casted to an int';
+							}
+							else
+							{
+								// detect how we want to validate our integer
+								$first = substr($args, 0, 1);
+								if( $first == ">" )
+								{
+									$argVal = substr($args, 1, strlen($args)-1);
+									if( !($value > $argVal) )
+									{
+										$errors[] = $comment['column'].' should be bigger than '.$argVal;
+									}
+								}
+								else if( $first == "<" )
+								{
+									$argVal = substr($args, 1, strlen($args)-1);
+									if( !($value < $argVal) )
+									{
+										$errors[] = $comment['column'].' should be smaller than '.$argVal;
+									}
+								}
+								else
+								{
+									// should be a 'in between' value
+									$parts 	= explode(",", $args);
+									$min 	= (int)$parts[0];
+									$max 	= (int)$parts[1];
+									
+									if( !($value > $min && $value < $max) )
+									{
+										$errors[] = $comment['column'].' should be in between '.($min).' and '.($max);
+									}
+								}
+							}
+						}
+						else if( $key == 'regex' )
+						{
+							$pattern = substr($constraint, $pos+2, strlen($constraint)-$pos-4);
+							$pattern = '/'.$pattern.'/';
+							if( !preg_match($pattern, $value) )
+							{
+								$errors[] = $comment['column'].' is not valid according to our pattern';
+							}
+						}
+						else if( $key == 'strlen' )
+						{
+							$args = substr($constraint, $pos+1, strlen($constraint)-$pos-2);
+							// should be a 'in between' value
+							$parts 	= explode(",", $args);
+							$min 	= (int)$parts[0];
+							$max 	= (int)$parts[1];
+							
+							$len = strlen($value);
+							
+							if( !($len > $min && $len < $max) )
+							{
+								$errors[] = $comment['column']. ' should be in between '.($min).' and '.($max);
+							}
+						}
+					}
+				}
 			}
 		}
-		$this->validated = true;
-		return true;
+		
+		// return the correct result
+		// and flag whether this row
+		// is properly validated or not
+		if( count($errors) == 0 )
+		{
+			$this->validated = true;
+			return true;	
+		}
+		else
+		{
+			$this->validated = false;
+			return false;
+		}
 	}
 }
