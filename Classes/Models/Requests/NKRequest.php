@@ -115,6 +115,21 @@ class NKRequest
 		{
 			$this->actionName = 'index';
 		}
+		
+		// Request translation module, allows you to write URLs
+		// in a different language.
+		if( Config::siteMap )
+		{
+			require 'Website/Sitemap.php';
+			if( $map[$this->controllerName] )
+			{
+				$this->controllerName = $map[$this->controllerName];
+			}
+			if( $map[$this->actionName] )
+			{
+				$this->actionName = $map[$this->actionName];
+			}
+		}
 	}
 	
 	/*
