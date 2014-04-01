@@ -146,7 +146,7 @@ class NKTableRow
 									
 									if( !($value > $min && $value < $max) )
 									{
-										$errors[] = $comment['column'].' should be in between '.($min).' and '.($max);
+										$errors[] = $comment['column'].' should be in between '.($min).' and '.($max).' is '.$value;
 									}
 								}
 							}
@@ -172,7 +172,7 @@ class NKTableRow
 							
 							if( !($len > $min && $len < $max) )
 							{
-								$errors[] = $comment['column']. ' should be in between '.($min).' and '.($max);
+								$errors[] = $comment['column']. ' should be in between '.($min).' and '.($max).' is '.$len;
 							}
 						}
 					}
