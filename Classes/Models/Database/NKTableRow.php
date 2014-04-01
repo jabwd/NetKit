@@ -1,8 +1,13 @@
 <?php
-class NKTableRow {
+class NKTableRow
+{
 	private $table;
+	private $validated;
 	
-	public function __construct($table = null) {
+	public $tableName;
+	
+	public function __construct($table = null)
+	{
 		$this->table = $table;
 	}
 	
@@ -12,11 +17,22 @@ class NKTableRow {
 	 */
 	public function save()
 	{
+		if( !$this->validated )
+		{
+			if( !$this->validate() )
+			{
+				throw new Exception("Cannot save a tablerow with incorrect values!", 500);
+			}
+		}
+		
 		// determine whether we should insert or not
-		if( !$this->shouldInsert() ) {
+		if( !$this->shouldInsert() )
+		{
 			$this->table->update($this);
 			return;
-		} else if( $this->tableName && strlen($this->tableName) > 1 ) {
+		}
+		else if( $this->tableName && strlen($this->tableName) > 1 )
+		{
 			// retry, but then try to instantiate the table class yourself
 			// and save the row after
 			$tableName = $this->tableName;
@@ -40,9 +56,12 @@ class NKTableRow {
 	{
 		// delete the table if we have a given table instance
 		// otherwise we don't know to whom we belong, so fail.
-		if( $this->table ) {
+		if( $this->table )
+		{
 			$this->table->delete($this);
-		} else {
+		}
+		else
+		{
 			throw new Exception("Cannot delete table row as no table instance is known", 500);
 		}
 	}
@@ -54,7 +73,33 @@ class NKTableRow {
 	 *			to apply some kind of low level blocking mechanisms before inserting rows
 	 *			( like last line of defense against malicious input )
 	 */
-	public function shouldInsert() {
+	public function shouldInsert()
+	{
 		return ($this->table == null);
+	}
+	
+	/**
+	 * Validates the current instance according to the standards
+	 * described in the comment section of the table.
+	 *
+	 * @param Reference $errorMessage, if you want to fully describe what went
+	 *					wrong to the user
+	 *
+	 * @returns Boolean true or false		
+	 */
+	public function validate(&$errorMessage = NULL)
+	{
+		$tableName = $this->tableName;
+		if( $tableName )
+		{
+			$table = $tableName::defaultTable();
+			if( $table )
+			{
+				$comments = $table->comments;
+				
+			}
+		}
+		$this->validated = true;
+		return true;
 	}
 }

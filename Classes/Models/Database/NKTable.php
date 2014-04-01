@@ -16,6 +16,7 @@ class NKTable
 	public $extraTable;		// used for joins
 	public $databaseName;	// custom database to be used with this table?
 	protected $database;	// custom database instance
+	public $comments;		// table column comments
 	
 	public static function defaultTable()
 	{
@@ -49,17 +50,39 @@ class NKTable
 		
 		
 		// get the tablelayout from cache
-		$key 	= Config::domainName.".db.".$this->tableName;
-		$cached = NKMemCache::sharedCache()->valueForKey($key);
+		$key 			= Config::domainName.".db.".$this->tableName;
+		$cacheManager 	= NKCacheManager::defaultManager();
+		$cached 		= $cacheManager->valueForKey($key);
 		if( $cached )
 		{
 			$this->tableLayout 	= $cached['layout'];
 			$this->primaryKey 	= $cached['primary'];
+			$this->comments		= $cached['comments'];
 		}
 		
 		// discover the table layout if needed
 		if( count($this->tableLayout) < 1 )
 		{
+			// fetch column comments
+			$comments = $this->query("SELECT column_name,column_comment FROM information_schema.columns WHERE table_name = '".$this->tableName."'");
+			if( $comments && $comments->num_rows > 0 )
+			{
+				$commentList = array();
+				while( $comment = $comments->fetch_assoc() )
+				{
+					$row['column'] 	= $comment['column_name'];
+					$row['comment'] = $comment['column_comment'];
+					$commentList[] 	= $row;
+				}
+				$this->comments = $commentList;
+			}
+			
+			// Consideration: Currently our layout is pretty primitive and we can probably
+			// get away with only using the above query for the comments for the layout
+			// as well.
+			
+			
+			// fetch the layout of the table
 			$result = $this->query("DESCRIBE ".$this->tableName);
 			if( $result && $result->num_rows > 0 )
 			{
@@ -74,9 +97,10 @@ class NKTable
 				}
 				$this->tableLayout = $layout;
 				
-				NKMemCache::sharedCache()->setValueForKey(array(
+				$cacheManager->setValueForKey(array(
 					'primary'=>$this->primaryKey,
-					'layout'=>$layout
+					'layout'=>$layout,
+					'comments'=>$commentList
 				), $key);
 				$result->free();
 			}
