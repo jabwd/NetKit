@@ -388,7 +388,9 @@ class NKTable
 			foreach($this->tableLayout as $tableKey)
 			{
 				if( $tableKey === $this->primaryKey )
+				{
 					continue;
+				}
 					
 				// determine whether we need this one
 				if( $object->$tableKey == NULL )
@@ -398,13 +400,19 @@ class NKTable
 				
 				$comma = ",";
 				if( $cnt == 0 )
+				{
 					$comma = "";
+				}
 				$value = $object->$tableKey;
 				if( $value && is_string($value) )
+				{
 					$value = "'".NKDatabase::escapeString($value)."'";
+				}
 				else if( ! $value )
+				{
 					$value = 'null'; // database style!
-					
+				}
+				
 				$query .= $comma.$value;
 				
 				$cnt++;
