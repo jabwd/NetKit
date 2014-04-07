@@ -72,12 +72,14 @@ function cacheForDirectory($dir)
 			continue;
 		}
 			
-		if( is_dir($filePath) ) {
+		if( is_dir($filePath) )
+		{
 			// scan next directory
-			if( $filePath === "./.git" ) {
-				continue;
-			}
-			if( $filePath === './NetKit/generator' )
+			if( $filePath === "./.git" ||
+				$filePath === "./NetKit/generator" ||
+				$filePath === "./NetKit/lib" ||
+				$filePath === "./Website/Classes/Views" ||
+				$filePath === "./NetKit/Classes/Views/templates" )
 			{
 				continue;
 			}

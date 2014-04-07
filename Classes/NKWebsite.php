@@ -22,7 +22,7 @@ require_once 'NetKit/Classes/Views/default/NKMainView.php';
 
 class NKWebsite
 {
-	const NetKitVersion = "0.21.0";
+	const NetKitVersion = "0.21.1";
 	
 	private static $_sharedInstance;
 	private $_controller;
@@ -63,7 +63,6 @@ class NKWebsite
 			}
 		}
 		$GLOBALS['classes'] = $classes;
-		
 		if( $GLOBALS['classes']['BootstrapController'] )
 		{
 			$bootstrap = new BootstrapController();
