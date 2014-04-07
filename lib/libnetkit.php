@@ -77,6 +77,10 @@ function cacheForDirectory($dir)
 			if( $filePath === "./.git" ) {
 				continue;
 			}
+			if( $filePath === './NetKit/generator' )
+			{
+				continue;
+			}
 			$output = array_merge($output, cacheForDirectory($filePath));
 		}
 		else if( file_exists($filePath) ) {
