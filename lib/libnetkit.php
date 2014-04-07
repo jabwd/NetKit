@@ -77,7 +77,6 @@ function cacheForDirectory($dir)
 			// scan next directory
 			if( $filePath === "./.git" ||
 				$filePath === "./NetKit/generator" ||
-				$filePath === "./NetKit/lib" ||
 				$filePath === "./Website/Classes/Views" ||
 				$filePath === "./NetKit/Classes/Views/templates" )
 			{
