@@ -145,7 +145,7 @@ class NKDatabase
 		{
 			return self::sanitize(serialize($input));
 		}
-		return $this->_connection->escape_string($input);
+		return self::escapeString($input);
 	}
 	
 	public function escString($input)
