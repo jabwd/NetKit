@@ -100,7 +100,7 @@ class NKRequest
 						// Then we go in steps of 2 ( key + value )
 						for($i=$idx;($i+1)<$cnt;$i+=2)
 						{
-							$this->values[$parts[$i]] = $parts[$i+1]; 
+							$this->values[$parts[$i]] = urldecode($parts[$i+1]); 
 						}
 					}
 				}
