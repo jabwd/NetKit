@@ -329,8 +329,19 @@ class NKTable
 	 */
 	public function findWhere($where)
 	{
-		$args = func_get_args();
+		// this way the user can pass an array if he wants
+		// to specify a sort by in the SQL query
+		$order = NULL;
+		if( is_array($where) )
+		{
+			$order = $where[1];
+			$where = $where[0];
+		}
 		
+		// handle the incoming function arguments,
+		// it can either be an argument list or the second argument
+		// being an array of arguments
+		$args = func_get_args();
 		if( is_array($args[1]) && count($args[1]) > 0 )
 		{
 			$values = $args[1];
@@ -360,7 +371,7 @@ class NKTable
 				$where = str_replace_once("?", $value, $where);
 			}
 		}
-		return $this->fetchAll($where);
+		return $this->fetchAll($where, $order);
 	}
 	
 	public function insert($object)
