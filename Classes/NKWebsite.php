@@ -1,8 +1,7 @@
 <?php
 /**
- * [NKWebsite is similar to Zend_Application in Zend. 
- * It is the main class, handles the request and starts
- * the services that NetKit offers to the user]
+ * NKWebsite is the main class of NetKit. It boots the system
+ * starts handling the requests, checks for caches etc.
  *
  * Version: 0.1
  * Author: 	Antwan van Houdt
@@ -51,6 +50,8 @@ class NKWebsite
 	 */
 	public static function start()
 	{
+		// Verify whether we have a cache list of all the available classes
+		// in our project so the autoloader can do its job.
 		$cacheManager = NKCacheManager::defaultManager();
 		$classes = $cacheManager->valueForKey("NetKit.Classes.".Config::domainName);
 		if( !$classes || Config::debugMode )
@@ -63,12 +64,20 @@ class NKWebsite
 				die("The NetKit autoloader is a required subsystem");
 			}
 		}
+		
+		// Make the class list available to the autoloader
 		$GLOBALS['classes'] = $classes;
+		
+		// in case of a bootstrap controller ( some code that HAS to be executed
+		// before anything else ) create it. Whatever happens next is up to the
+		// implementation of the bootstrap controller. NetKit doesn't call any methods
+		// of bootstrap at this point in time.
 		if( $GLOBALS['classes']['BootstrapController'] )
 		{
 			$bootstrap = new BootstrapController();
 		}
 		
+		// Setup done, handle the request.
 		self::sharedWebsite()->handleRequest();
 	}
 	
@@ -81,28 +90,24 @@ class NKWebsite
 	 */
 	public function handleRequest()
 	{
-		if( Config::forceDomain )
-		{
-			if( $_SERVER['HTTP_HOST'] != Config::domainName )
-			{
-				redirect('http://'.Config::domainName);
-			}
-		}
-		$this->request = new NKRequest();
-		
+		$this->request 		= new NKRequest();
 		$controllerClass 	= ucfirst($this->request->controllerName).'Controller';
 		$action 			= $this->request->actionName.'Action';
 		$this->_controller 	= new $controllerClass();
 		
+		// figure out whether the controller has a view and action method
+		// for the current request, 404 if it doesn't otherwise call it
 		if( !$this->_controller->handleRequest($this->request) || !method_exists($this->_controller, $action) )
 		{
 			throw new PageNotFoundException();
 		}
 		$this->_controller->$action();
 		
+		// render the view of the current controller
 		$view = new NKMainView($this->_controller->layout, $this->_controller->view);
 		$view->render();
 		
+		// bread crumb
 		NKSession::updatePreviousPage();
 	}
 	
@@ -119,14 +124,6 @@ class NKWebsite
 			return $this->_controller->name.' - '.Config::title;
 		}
 		return Config::title;
-	}
-	
-	/**
-	 * Deprecated: use "title()" instead
-	 */
-	public function getTitle()
-	{
-		return $this->title();
 	}
 	
 	public function description()

@@ -4,15 +4,16 @@ class NKView
 	protected 	$_templatePath;
 	public 		$controller;
 
-	public function __construct($templateFile = "", $controller = null, $templateBasePath = null)
+	public function __construct($templateFile = "", $controller = NULL, $templateBasePath = NULL)
 	{
-		// offer a default template path
-		if( ! $templateBasePath )
+		$this->controller = $controller;
+		if( !$templateBasePath )
 		{
 			$templateBasePath = Config::templatesPath;
 		}
 		
-		// check whether we can open our current template or not
+		// Generate the template path and verify whether it exists
+		// or not, if it doesnt we throw an exception for a 404 error
 		$path = $templateBasePath.$templateFile.'.php';
 		if( file_exists($path) && strlen($templateFile) > 0 )
 		{
@@ -22,15 +23,12 @@ class NKView
 		{
 			throw new PageNotFoundException();
 		}
-		
-		$this->controller = $controller;
 	}
 	
 	/*
-	 * Description:	This function is called by the NKMainView class to render the view on the screen
-	 *				for custom view drawing and logic this should be subclassed
+	 * Generates the HTML output for the current NKView instance
 	 *
-	 * Returns:		void
+	 * @return void
 	 */
 	public function render()
 	{

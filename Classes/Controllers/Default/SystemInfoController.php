@@ -29,19 +29,4 @@ class SystemInfoController extends NKActionController
 		$this->view->memoryPercentage 	= ceil(($usedMemory/$totalMemory)*100);
 		$this->view->netkitVersion 		= NKWebsite::NetKitVersion.' ('.$gitversion.')';
 	}
-	
-	public function updateAction()
-	{
-		// check with GIT whether there is a new version available for either the website or 
-		// for NetKit
-		
-		// check for updates of NetKit
-		exec("git fetch origin");
-		echo 'hi';
-		print_r(exec("git log HEAD..origin/master --oneline"));
-		echo 'henk';
-		exit;
-		
-		redirect("/systemInfo/");
-	}
 }

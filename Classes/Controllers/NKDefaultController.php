@@ -19,10 +19,10 @@ class NKDefaultController extends NKActionController
 		else
 		{
 			$this->view = new NKView(
-									$request->controllerName.'/'.$request->actionName, 
-									$this, 
-									'NetKit/Classes/Views/templates/'
-						);	
+						$request->controllerName.'/'.$request->actionName, 
+						$this, 
+						'NetKit/Classes/Views/templates/'
+			);	
 		}
 		return $this->view->pageExists();
 	}

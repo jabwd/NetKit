@@ -4,7 +4,7 @@ class NotificationController extends NKActionController
 	public function handleRequest($request = null)
 	{
 		$this->_request = $request;
-		$this->view = new NKView('systeminfo/index', $this, 'NetKit/Classes/Views/templates/');
+		$this->view 	= new NKView('systeminfo/index', $this, 'NetKit/Classes/Views/templates/');
 		return $this->view->pageExists();
 	}
 
