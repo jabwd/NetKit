@@ -6,9 +6,13 @@ class NKJSONCache extends NKCache
 	public function __construct()
 	{
 		if( file_exists('Cache/data.json') )
-			$this->storage = json_decode(file_get_contents("Cache/data.json"),true);
+		{
+			$this->storage = json_decode(file_get_contents("Cache/data.json"), true);
+		}
 		else
+		{
 			$this->storage = array();
+		}
 	}
 	
 	public function valueForKey($key)
@@ -22,7 +26,6 @@ class NKJSONCache extends NKCache
 		$this->save();
 	}
 	
-	// reset the data
 	public function purge()
 	{
 		file_put_contents("Cache/data.json","");

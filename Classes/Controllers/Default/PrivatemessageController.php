@@ -4,7 +4,6 @@ class PrivatemessageController extends NKActionController
 	public function __construct()
 	{
 		$this->name = "Inbox";
-		//$this->layout = "Website/Classes/Views/layout/test.php";
 	}
 	
 	public function handleRequest($request = null)

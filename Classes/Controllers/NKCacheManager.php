@@ -10,10 +10,11 @@ class NKCacheManager
 	private static $_defaultController;
 	
 	/**
-	 * Description: You are not limited to using 1 cache controller as you might
-	 *				want to use different backing stores throughout your code
-	 *				This one, however, is mainly used for the general stuff
-	 *				and is easy to access anywhere around your code
+	 * If you don't want to bother creating
+	 * and configuring your own cache controller
+	 * a system wide one can be used through this method
+	 *
+	 * @return object NKCacheManager
 	 */
 	public static function defaultManager()
 	{
@@ -24,9 +25,11 @@ class NKCacheManager
 		return self::$_defaultController;
 	}
 	
+	/**
+	 * @param string $engineName
+	 */
 	public function __construct($engine = 'apc')
 	{
-		// determine what backing store to use
 		if( $engine === 'apc' )
 		{
 			$this->_backingStore = new NKAPCCache();
@@ -37,7 +40,7 @@ class NKCacheManager
 		}
 		else if( $engine === 'memcache' )
 		{
-			$this->_backingStore = new NKMemCache();
+			$this->_backingStore = new NKMemcache();
 		}
 		else
 		{
