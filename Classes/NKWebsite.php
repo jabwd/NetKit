@@ -31,6 +31,7 @@ class NKWebsite
 	
 	private function __construct()
 	{
+		// No implementation
 	}
 	
 	public static function sharedWebsite()
