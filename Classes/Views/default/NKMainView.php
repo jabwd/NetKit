@@ -34,6 +34,21 @@ class NKMainView extends NKView
 		// the layout file SHOULD takes care of rendering the page view
 		if( $this->_templatePath )
 		{
+			$resourceFolder = 'public/'.Config::resourceFolderPath;
+			if( !file_exists('public/cache/site.css') || Config::debugMode )
+			{
+				$less = new lessc;
+				try
+				{
+					$less->compileFile($resourceFolder.'css/default.less', 'public/cache/site.css');
+				}
+				catch(exception $e)
+				{
+					echo $e->getMessage();
+					exit;
+				}
+			}
+		
 			include($this->_templatePath);
 		}
 	}
