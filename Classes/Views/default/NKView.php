@@ -32,33 +32,45 @@ class NKView
 	 */
 	public function render()
 	{
-		// include and 'draw' the template file if we have one
-		if( $this->_templatePath ) {
-			include($this->_templatePath);
-		}
-	}
-	
-	public function widget($path = null, $otherPrefix = null) {
-		$prefix = Config::widgetPath;
-		if( $otherPrefix ) {
-			$prefix = $otherPrefix;
-		}
-		$path = $prefix.$path;
-		if( file_exists($path) ) {
-			include $path;
-		}
+		include($this->_templatePath);
 	}
 	
 	/**
-	 * Description:	this method should be overridden by a subclass if it has situation
-	 *				at which it should report that the page does not exist
+	 * Used to determine whether the view thinks it can render
+	 * itself without any issues ornot
+	 * A use case could be when you have a custom NKView that does
+	 * not require a template file, so you override this method
+	 * to always return true
 	 *
-	 * Returns:		true when page exists, false when it doesn't [insert you-dont-say]
+	 * @return boolean
 	 */
-	public function pageExists() {
-		if( $this->_templatePath ) {
+	public function pageExists()
+	{
+		if( file_exists($this->_templatePath) )
+		{
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * A widget is a snippet script to be used in several different
+	 * template files. It allows you to write more easy to maintain
+	 * code by not writing the same thing several times over
+	 *
+	 * @return void
+	 */
+	public function widget($path = null, $otherPrefix = null)
+	{
+		$prefix = Config::widgetPath;
+		if( $otherPrefix )
+		{
+			$prefix = $otherPrefix;
+		}
+		$path = $prefix.$path;
+		if( file_exists($path) )
+		{
+			include $path.'.php';
+		}
 	}
 }

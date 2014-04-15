@@ -5,7 +5,8 @@ class NKMainView extends NKView
 
 	public function __construct($path = NULL, $contentView = NULL)
 	{
-		if( ! $path )
+		$this->contentView = $contentView;
+		if( !$path )
 		{
 			$path = Config::layoutPath;
 		}
@@ -17,7 +18,6 @@ class NKMainView extends NKView
 		{
 			throw new Exception("Unable to find main template path", 500);
 		}
-		$this->contentView = $contentView;
 	}
 	
 	public function render()
@@ -31,12 +31,7 @@ class NKMainView extends NKView
 			return;
 		}
 		
-		// this happens when we do not have a view to render
-		if( !$pageView )
-		{
-			throw new PageNotFoundException();
-		}
-		
+		// the layout file SHOULD takes care of rendering the page view
 		if( $this->_templatePath )
 		{
 			include($this->_templatePath);
