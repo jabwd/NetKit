@@ -50,17 +50,17 @@ class NKCacheManager
 	
 	public function setValueForKey($value, $key)
 	{
-		$this->_backingStore->setValueForKey($value, $key);
+		$this->_backingStore->setValueForKey($value, Config::domainName.$key);
 	}
 	
 	public function valueForKey($key)
 	{
-		return $this->_backingStore->valueForKey($key);
+		return $this->_backingStore->valueForKey(Config::domainName.$key);
 	}
 	
 	public function removeValueForKey($key)
 	{
-		return $this->_backingStore->removeValueForKey($key);
+		return $this->_backingStore->removeValueForKey(Config::domainName.$key);
 	}
 	
 	public function purge()

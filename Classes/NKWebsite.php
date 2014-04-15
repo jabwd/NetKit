@@ -53,11 +53,11 @@ class NKWebsite
 		// Verify whether we have a cache list of all the available classes
 		// in our project so the autoloader can do its job.
 		$cacheManager = NKCacheManager::defaultManager();
-		$classes = $cacheManager->valueForKey("NetKit.Classes.".Config::domainName);
+		$classes = $cacheManager->valueForKey("NetKit.Classes");
 		if( !$classes || Config::debugMode )
 		{
 			$classes = cacheForDirectory(".");
-			$cacheManager->setValueForKey($classes, "NetKit.Classes.".Config::domainName);
+			$cacheManager->setValueForKey($classes, "NetKit.Classes");
 			
 			if( !$classes )
 			{
