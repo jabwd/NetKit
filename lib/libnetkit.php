@@ -45,11 +45,6 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 set_exception_handler('handleException');
 set_error_handler("myErrorHandler");
 
-
-
-//----------------------------------------------------------//
-// Standard functions										//
-
 function cacheForDirectory($dir)
 {
 	$files 	= scandir($dir);
@@ -75,6 +70,8 @@ function cacheForDirectory($dir)
 		if( is_dir($filePath) )
 		{
 			// scan next directory
+			// skip the folders we're not interested in ( where classes
+			// should not be in in the first place )
 			if( $filePath === "./.git" ||
 				$filePath === "./NetKit/generator" ||
 				$filePath === "./Website/Classes/Views" ||
@@ -84,7 +81,8 @@ function cacheForDirectory($dir)
 			}
 			$output = array_merge($output, cacheForDirectory($filePath));
 		}
-		else if( file_exists($filePath) ) {
+		else if( file_exists($filePath) )
+		{
 			// Add the file to our array, its name without the extension
 			// as key and the filepath as value
 			$output[basename($file, ".php")] = $filePath;
@@ -115,8 +113,8 @@ function str_replace_once($needle, $replace, $haystack)
 	$pos = strpos($haystack, $needle);
 	if( $pos === false )
 	{
-    	return $haystack; 
-    }
+		return $haystack; 
+	}
     return substr_replace($haystack, $replace, $pos, strlen($needle)); 
 }
 
