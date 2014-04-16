@@ -67,10 +67,10 @@ class NKView
 		{
 			$prefix = $otherPrefix;
 		}
-		$path = $prefix.$path;
+		$path = $prefix.$path.'.php';
 		if( file_exists($path) )
 		{
-			include $path.'.php';
+			include $path;
 		}
 	}
 }
