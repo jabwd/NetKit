@@ -72,9 +72,10 @@ function cacheForDirectory($dir)
 			// scan next directory
 			// skip the folders we're not interested in ( where classes
 			// should not be in in the first place )
-			if( $filePath === "./.git" ||
-				$filePath === "./NetKit/generator" ||
-				$filePath === "./Website/Classes/Views" ||
+			if( $filePath === "./.git" 								||
+				$filePath === "./NetKit/generator" 					||
+				$filePath === "./Website/Classes/Views/templates" 	||
+				$filePath === './Website/Classes/Views/layout' 		||
 				$filePath === "./NetKit/Classes/Views/templates" )
 			{
 				continue;
