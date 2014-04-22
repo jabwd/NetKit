@@ -18,19 +18,46 @@ spl_autoload_register(function($className)
 
 function handleException($exception)
 {
-	if( headers_sent() || Config::debugMode )
+	$code = $exception->getCode();
+	if( $code < 400 || $code > 410 )
+	{
+		// more advanced 'graphical' error handling
+	}
+	echo '<!DOCTYPE html><html>';
+	echo '<head><style type="text/css">
+	body
+	{
+		padding-left:20px;
+		color:rgb(100, 100, 100);
+		font-family:"Lucida Grande";
+	}
+	</style>';
+	echo '</head><body>';
+	echo '<h1>'.$exception->getCode().'</h1>';
+	echo 'Something went wrong<br /><br />';
+	if( Config::debugMode )
+	{
+		$trace = $exception->getTrace();
+		foreach($trace as $line)
+		{
+			echo '['.$line['line'].'] <b>'.$line['class'].'::'.$line['function'].'</b> in ('.$line['file'].')<br />';
+		}	
+	}
+	echo '<a href="/">Home</a>';
+	echo '</body></html>';
+	exit;
+	/*if( headers_sent() || Config::debugMode )
 	{
 		print_r($exception);
 		exit;
 	}
 	else
 	{
-		$_SESSION['exception'] = serialize($exception);
-		redirect('/error/index/'.$exception->getCode());
+		
 	}
 	print_r($exception->getMessage());
 	print_r($exception->getTrace());
-	exit;
+	exit;*/
 }
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)
