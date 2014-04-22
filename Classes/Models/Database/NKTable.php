@@ -451,6 +451,8 @@ class NKTable
 	
 	/**
 	 * Deletes the given object from the backend
+	 * 
+	 * @param object NKTableRow
 	 */
 	public function delete($object)
 	{
@@ -465,6 +467,10 @@ class NKTable
 	/**
 	 * Returns the amount of rows for the given
 	 * where clause o the current table/database configuration
+	 *
+	 * @param string $where OPTIONAL
+	 *
+	 * @return int
 	 */
 	public function rowCount($where = NULL)
 	{
@@ -475,6 +481,6 @@ class NKTable
 		$result = $this->query("SELECT COUNT(*) as count FROM ".$this->tableName.$where);
 		$rows = $result->fetch_assoc();
 		$result->free();
-		return $rows['count'];
+		return (int)$rows['count'];
 	}
 }
