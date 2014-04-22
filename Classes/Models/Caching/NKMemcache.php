@@ -24,6 +24,12 @@ class NKMemcache extends NKCache
 		}
 		
 		$this->memcache = new Memcache();
+		
+		if( !$this->memcache->connect(self::SERVER, self::PORT) )
+		{
+			throw new Exception("cannot connect to memcache server", 500);
+		}
+		
 		$this->memcache->addserver(self::SERVER,self::PORT);
 	}
 	

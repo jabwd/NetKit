@@ -2,7 +2,7 @@
 // since NKCacheManager is a required subsystem of NetKit we are
 // not making use of the autoloader here just yet!
 require_once 'NetKit/Classes/Models/Caching/NKCache.php';
-require_once 'NetKit/Classes/Models/Caching/NKAPCCache.php';
+require_once 'NetKit/Classes/Models/Caching/NKMemcache.php';
 
 class NKCacheManager
 {
@@ -28,7 +28,7 @@ class NKCacheManager
 	/**
 	 * @param string $engineName
 	 */
-	public function __construct($engine = 'apc')
+	public function __construct($engine = 'memcache')
 	{
 		if( $engine === 'apc' )
 		{
@@ -41,6 +41,13 @@ class NKCacheManager
 		else if( $engine === 'memcache' )
 		{
 			$this->_backingStore = new NKMemcache();
+			
+			// just testin
+			$this->setValueForKey("test", "testKey");
+			if( $this->valueForKey("testKey") !== "test" )
+			{
+				throw new Exception('memcache doesnt actually work');
+			}
 		}
 		else
 		{
