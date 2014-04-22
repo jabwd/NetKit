@@ -103,7 +103,8 @@ function cacheForDirectory($dir)
 				$filePath === "./NetKit/generator" 					||
 				$filePath === "./Website/Classes/Views/templates" 	||
 				$filePath === './Website/Classes/Views/layout' 		||
-				$filePath === "./NetKit/Classes/Views/templates" )
+				$filePath === "./NetKit/Classes/Views/templates"	||
+				$filePath === './public' )
 			{
 				continue;
 			}
