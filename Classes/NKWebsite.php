@@ -14,7 +14,7 @@ require_once 'Website/Config.php';
 require_once 'NetKit/Classes/Models/Requests/NKRequest.php';
 require_once 'NetKit/Classes/Models/Session/NKSession.php';
 
-require_once 'NetKit/Classes/Controllers/NKCacheManager.php';
+require_once 'NetKit/Classes/Models/Caching/NKCacheManager.php';
 
 require_once 'NetKit/Classes/Views/default/NKView.php';
 require_once 'NetKit/Classes/Views/default/NKMainView.php';

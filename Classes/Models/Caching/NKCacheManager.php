@@ -10,9 +10,7 @@ class NKCacheManager
 	private static $_defaultController;
 	
 	/**
-	 * If you don't want to bother creating
-	 * and configuring your own cache controller
-	 * a system wide one can be used through this method
+	 * Returns a shared instance of the cache manager
 	 *
 	 * @return object NKCacheManager
 	 */
@@ -41,13 +39,6 @@ class NKCacheManager
 		else if( $engine === 'memcache' )
 		{
 			$this->_backingStore = new NKMemcache();
-			
-			// just testin
-			$this->setValueForKey("test", "testKey");
-			if( $this->valueForKey("testKey") !== "test" )
-			{
-				throw new Exception('memcache doesnt actually work');
-			}
 		}
 		else
 		{

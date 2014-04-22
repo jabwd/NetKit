@@ -34,9 +34,10 @@ class NKMainView extends NKView
 		// the layout file SHOULD takes care of rendering the page view
 		if( $this->_templatePath )
 		{
-			$resourceFolder = 'public/'.Config::resourceFolderPath;
+			// comile the CSS if applicable
 			if( !file_exists('public/cache/site.css') || Config::debugMode )
 			{
+				$resourceFolder = 'public/'.Config::resourceFolderPath;
 				$less = new lessc;
 				try
 				{
@@ -48,7 +49,6 @@ class NKMainView extends NKView
 					exit;
 				}
 			}
-		
 			include($this->_templatePath);
 		}
 	}
