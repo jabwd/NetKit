@@ -379,10 +379,11 @@ class NKTable
 		if( count($this->tableLayout) > 0 )
 		{
 			$query = "INSERT INTO ".$this->tableName." (";
+			$values = "";
 			$cnt = 0;
 			foreach($this->tableLayout as $tableKey)
 			{
-				if( $tableKey === $this->primaryKey || $object->$tableKey == NULL )
+				if( ($tableKey === $this->primaryKey && $object->$tableKey == NULL) || $object->$tableKey == NULL )
 				{
 					continue;
 				}
@@ -391,29 +392,8 @@ class NKTable
 				{
 					$comma = "";
 				}
-				$query .= $comma.$tableKey;
-				$cnt++;
-			}
-			$query .= ") VALUES (";
-			$cnt = 0;
-			foreach($this->tableLayout as $tableKey)
-			{
-				if( $tableKey === $this->primaryKey )
-				{
-					continue;
-				}
-					
-				// determine whether we need this one
-				if( $object->$tableKey == NULL )
-				{
-					continue;
-				}
+				$query .= $comma.$this->tableName.'.'.$tableKey;
 				
-				$comma = ",";
-				if( $cnt == 0 )
-				{
-					$comma = "";
-				}
 				$value = $object->$tableKey;
 				if( $value && is_string($value) )
 				{
@@ -423,12 +403,11 @@ class NKTable
 				{
 					$value = 'null'; // database style!
 				}
-				
-				$query .= $comma.$value;
+				$values .= $comma.$value;
 				
 				$cnt++;
 			}
-			$query .= ")";
+			$query .= ") VALUES (".$values.")";
 			$database = $this->database();
 			$result = $database->query($query);
 			return $database->lastInsertID();
