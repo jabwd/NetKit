@@ -10,15 +10,8 @@
  * access to the looks of pages, simply modify the data in the backing store
  * and refresh the page..
  */
-class PageController extends NKActionController
+class PageController extends NKDefaultController
 {
-	public function handleRequest($request = null)
-	{
-		$this->_request = $request;
-		$this->view = new NKView('page/'.$request->actionName, $this, 'NetKit/Classes/Views/templates/');
-		return $this->view->pageExists();
-	}
-	
 	protected function getPage()
 	{
 		$page = Pages::defaultTable()->findMain();
