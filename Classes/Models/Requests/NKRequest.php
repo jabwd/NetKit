@@ -32,28 +32,36 @@ class NKRequest
 	
 	/**
 	 * This method wraps code for getting the current request URI
-	 * Since you might be using HIPHOP-PHP ( Which is natively supported by NetKit )
-	 * you are going to need to modify NGINX or whatever you are using to return
-	 * the real request_uri in a proxy header
+	 * At some point you might start using some fancy server setups
+	 * where the request_uri is no longer the true URI used
+	 * for your request. Use this method in your code
+	 * so NetKit / you can handle this at 1 singel point of failure
+	 * This is important for code maintainability and scalabirity of your project
 	 *
-	 * @return String current request URI
+	 * @return string
 	 */
 	public static function getURI()
 	{
-		if( array_key_exists("HTTP_HIPHOP", $_SERVER) && $_SERVER['HTTP_HIPHOP'] === 'YES' ) 
+		if( isset($_SERVER['XXX_HTTP_REQUEST_URI']) ) 
 		{
-			return $_SERVER['HTTP_REALURI'];
+			return $_SERVER['XXX_HTTP_REQUEST_URI'];
 		}
 		return $_SERVER['REQUEST_URI'];
 	}
 	
 	/**
-	 * Same functionality as the getURI() but then for the IP address
+	 * Returns the IP used for the current request
+	 * Should be modified if you are behind some kind of proxy
+	 * that hides the true IP of the request
+	 *
 	 * @return String a string containing an IPv4 address
 	 */
 	public static function getRequestIP() 
 	{
-		// TODO TODO TODO TODO DOES NOT SUPPORT PROXIES!!!
+		if( isset($_SERVER['XXX_REMOTE_ADDR']) )
+		{
+			return $_SERVER['XXX_REMOTE_ADDR'];
+		}
 		return $_SERVER['REMOTE_ADDR'];
 	}
 	
@@ -121,11 +129,11 @@ class NKRequest
 		if( Config::siteMap )
 		{
 			require 'Website/Sitemap.php';
-			if( $map[$this->controllerName] )
+			if( isset($map[$this->controllerName]) )
 			{
 				$this->controllerName = $map[$this->controllerName];
 			}
-			if( $map[$this->actionName] )
+			if( isset($map[$this->actionName]) )
 			{
 				$this->actionName = $map[$this->actionName];
 			}
@@ -133,21 +141,28 @@ class NKRequest
 	}
 	
 	/*
-	 * Description: key-value accessor for the values encoded with keys in the URL
-	 *				parsed by this class
+	 * Accessor of the 'key/value' pairs in the URL of the
+	 * current request
 	 *
-	 * Returns:		whatever value is in the array at $key
+	 * @param string $key
+	 * 
+	 * @return string $value
 	 */
 	public function valueForKey($key) 
 	{
-		return $this->values[$key];
+		if( isset($this->values[$key]) )
+		{
+			return $this->values[$key];
+		}
+		return NULL;
 	}
 	
 	/*
-	 * Description:	this is used in order to determine whether the main view should be drawn or not
-	 *				this is relevent since ajax requests usually only return JSON data or some HTML parts
+	 * Determines whether the current request supposedly came from
+	 * a javascript request, and therefore should be rendered
+	 * faster / simpler without the full templating system
 	 *
-	 * Return:		returns true or false depending whether get_ajax is true
+	 * @return boolean
 	 */
 	public function isAjaxRequest() 
 	{
@@ -160,7 +175,7 @@ class NKRequest
 	 *
 	 * @param $titleString
 	 *
-	 * @return URL Safe title string
+	 * @return string Safe title string
 	 */
 	public static function stringForURLTitle($titleString)
 	{

@@ -17,7 +17,7 @@ class NKSession
 			return $user;
 		}
 		
-		if( $_SESSION['userID'] > 0 )
+		if( isset($_SESSION['userID']) )
 		{
 			$user = Users::defaultTable()->find($_SESSION['userID']);
 			if( $user )
@@ -32,25 +32,28 @@ class NKSession
 			}
 		}
 		
-		$userID = (int)$_COOKIE[self::CookieUserIDKey];
-		if( $userID > 0 )
+		if( isset($_COOKIE[self::CookieUserIDKey]) )
 		{
-			$user = Users::defaultTable()->find($userID);
-			$hash = self::userRetainCookieHash($user);
-			
-			if( $hash === $_COOKIE[self::CookieLoginHashKey] )
+			$userID = (int)$_COOKIE[self::CookieUserIDKey];
+			if( $userID > 0 )
 			{
-				$_SESSION['userID'] = (int)$user->id;
-				self::setPersistentCookie(self::CookieLoginHashKey, $hash);
-				self::setPersistentCookie(self::CookieUserIDKey, $user->id);
-				return $user;
-			}
-			else
-			{
-				// When a different IP is used the above will fail
-				// but when we leave user set recalling currentUser()
-				// will actually return a user instance, this prevents that
-				$user = NULL;
+				$user = Users::defaultTable()->find($userID);
+				$hash = self::userRetainCookieHash($user);
+				
+				if( $hash === $_COOKIE[self::CookieLoginHashKey] )
+				{
+					$_SESSION['userID'] = (int)$user->id;
+					self::setPersistentCookie(self::CookieLoginHashKey, $hash);
+					self::setPersistentCookie(self::CookieUserIDKey, $user->id);
+					return $user;
+				}
+				else
+				{
+					// When a different IP is used the above will fail
+					// but when we leave user set recalling currentUser()
+					// will actually return a user instance, this prevents that
+					$user = NULL;
+				}
 			}
 		}
 		return NULL;
@@ -152,7 +155,7 @@ class NKSession
 	 */
 	public static function updatePreviousPage()
 	{
-		if( !$_SESSION['current'] )
+		if( !isset($_SESSION['current']) )
 		{
 			$_SESSION['current'] = '/';
 		}
@@ -169,7 +172,7 @@ class NKSession
 	 */
 	public static function navigateBack()
 	{
-		if( !$_SESSION['current'] )
+		if( !isset($_SESSION['current']) )
 		{
 			$_SESSION['current'] = '/';
 			redirect('/');

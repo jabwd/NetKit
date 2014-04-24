@@ -72,7 +72,7 @@ class NKWebsite
 		// before anything else ) create it. Whatever happens next is up to the
 		// implementation of the bootstrap controller. NetKit doesn't call any methods
 		// of bootstrap at this point in time.
-		if( $GLOBALS['classes']['BootstrapController'] )
+		if( isset($classes['BootstrapController']) )
 		{
 			$bootstrap = new BootstrapController();
 		}

@@ -1,8 +1,9 @@
 <?php
 class NKActionController
 {
-	public $name 	= NULL;
-	public $layout 	= NULL;
+	public $name 		= NULL;
+	public $description = NULL;
+	public $layout 		= NULL;
 	public $view;
 	
 	protected $_request;

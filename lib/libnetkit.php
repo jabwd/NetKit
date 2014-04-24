@@ -89,7 +89,7 @@ function cacheForDirectory($dir)
 		$pathParts = pathinfo($filePath);
 		
 		// ignore non-php files
-		if( $pathParts['extension'] != 'php' && !is_dir($filePath) )
+		if( !is_dir($filePath) && $pathParts['extension'] != 'php' )
 		{
 			continue;
 		}

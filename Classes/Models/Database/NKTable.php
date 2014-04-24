@@ -140,7 +140,9 @@ class NKTable
 	 */
 	public function fetchAll($where = "", $tail = "", $skip = NULL)
 	{
-		$query = "SELECT ";
+		$query 				= "SELECT ";
+		$tableNames 		= NULL;
+		$queryConstraints 	= NULL;
 		
 		// Add the columns of 'self' to the current query
 		// With a good prefix so they do not interfere with any
@@ -342,7 +344,7 @@ class NKTable
 		// it can either be an argument list or the second argument
 		// being an array of arguments
 		$args = func_get_args();
-		if( is_array($args[1]) && count($args[1]) > 0 )
+		if( isset($args[1]) && is_array($args[1]) )
 		{
 			$values = $args[1];
 		}
