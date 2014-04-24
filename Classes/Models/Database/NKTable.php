@@ -143,6 +143,7 @@ class NKTable
 		$query 				= "SELECT ";
 		$tableNames 		= NULL;
 		$queryConstraints 	= NULL;
+		$finalResult		= NULL;
 		
 		// Add the columns of 'self' to the current query
 		// With a good prefix so they do not interfere with any
