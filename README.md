@@ -12,3 +12,6 @@ on some other projects.
 
 A code editor for Mac to help with faster NetKit development will follow later as well ( Need to find some opensource editor for mac
 that has the right feature set to build upon ).
+
+For more information go to:
+http://www.exurion.com
