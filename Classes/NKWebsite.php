@@ -78,7 +78,14 @@ class NKWebsite
 		}
 		
 		// Setup done, handle the request.
-		self::sharedWebsite()->handleRequest();
+		try
+		{
+			self::sharedWebsite()->handleRequest();
+		}
+		catch(Exception $e)
+		{
+			handleException($e);
+		}
 	}
 	
 	/**
