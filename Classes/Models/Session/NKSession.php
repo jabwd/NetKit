@@ -78,21 +78,30 @@ class NKSession
 		$currentUser = self::currentUser();
 		if( !$currentUser )
 		{
-			return;
+			return false;
 		}
 		
-		$permissions = $_SESSION['permissions'];
+		$permissions = array();
+		if( isset($_SESSION['permissions']) )
+		{
+			$permissions = $_SESSION['permissions'];
+		}
 		
-		if( $useCache == true && $permissions[$permission] === $currentUser->id )
+		// if the permission is cached and exists we are done here
+		if( $useCache == true 					&& 
+			isset($permissions[$permission]) 	&& 
+			$permissions[$permission] === $currentUser->id )
 		{
 			return true;
 		}
 		
+		// the permission has not been fetched before, fetch for the currentUser
+		// and store it in his session.
 		$p = new Permissions();
 		if( $p->permissionForUserID($permission, $currentUser->id) )
 		{
-			$permissions[$permission] = $currentUser->id;
-			$_SESSION['permissions'] = $permissions;
+			$permissions[$permission] 	= $currentUser->id;
+			$_SESSION['permissions'] 	= $permissions;
 			return true;
 		}
 		return false;
