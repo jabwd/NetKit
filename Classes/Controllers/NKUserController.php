@@ -52,7 +52,7 @@ class NKUserController extends NKActionController
 			redirect('/');
 		}
 		
-		if( $_POST['login'] && !$this->_user )
+		if( isset($_POST['login']) && !$this->_user )
 		{
 			$username 	= $_POST['username'];
 			$password 	= $_POST['password'];
@@ -69,7 +69,7 @@ class NKUserController extends NKActionController
 				$this->view->loginFailed = true;
 			}
 		}
-		else if( $_POST['register'] )
+		else if( isset($_POST['register']) )
 		{
 			redirect("/user/register");
 		}
@@ -87,7 +87,7 @@ class NKUserController extends NKActionController
 	
 	public function registerAction($login = true)
 	{
-		if( $_POST['register'] )
+		if( isset($_POST['register']) )
 		{
 			$username = $_POST['username'];
 			

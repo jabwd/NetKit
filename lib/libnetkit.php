@@ -40,7 +40,12 @@ function handleException($exception)
 		$trace = $exception->getTrace();
 		foreach($trace as $line)
 		{
-			echo '['.$line['line'].'] <b>'.$line['class'].'::'.$line['function'].'</b> in ('.$line['file'].')<br />';
+			$class = '';
+			if( isset($line['class']) )
+			{
+				$class = $line['class'];
+			}
+			echo '['.$line['line'].'] <b>'.$class.'::'.$line['function'].'</b> in ('.$line['file'].')<br />';
 		}	
 	}
 	echo '<a href="/">Home</a>';
