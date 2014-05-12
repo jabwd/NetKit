@@ -1,7 +1,7 @@
 <?php
 spl_autoload_register(function($className)
 {
-	if( $GLOBALS['classes'][$className] )
+	if( isset($GLOBALS['classes'][$className]) )
 	{
 		require_once $GLOBALS['classes'][$className];
 		return;
@@ -29,7 +29,7 @@ function handleException($exception)
 	{
 		padding-left:20px;
 		color:rgb(100, 100, 100);
-		font-family:"Lucida Grande";
+		font-family:"Lucida Grande", "Helvetica";
 	}
 	</style>';
 	echo '</head><body>';
