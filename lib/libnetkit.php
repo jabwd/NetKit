@@ -34,7 +34,7 @@ function handleException($exception)
 	</style>';
 	echo '</head><body>';
 	echo '<h1>'.$exception->getCode().'</h1>';
-	echo 'Something went wrong<br /><br />';
+	echo $exception->getMessage().'<br /><br />';
 	if( Config::debugMode )
 	{
 		$trace = $exception->getTrace();
