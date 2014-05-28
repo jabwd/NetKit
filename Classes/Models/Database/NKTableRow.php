@@ -99,10 +99,14 @@ class NKTableRow
 				$comments = $table->comments;
 				foreach($comments as $comment)
 				{
-					$value 			= $this->$comment['column'];
+					$value = NULL;
+					if( isset($this->$comment['column']) )
+					{
+						$value = $this->$comment['column'];
+					}
 					$constraint 	= $comment['comment'];
 					
-					if( strlen($constraint) > 0 )
+					if( $value && strlen($constraint) > 0 )
 					{	
 						// detect constraint method
 						$pos = strpos($constraint, "[");
