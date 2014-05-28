@@ -133,7 +133,7 @@ class NKSession
 			
 			// a simple mechanic in order to try and make it more difficult for people
 			// to create multiple accounts
-			if( !$_COOKIE['createdAccount'] )
+			if( !isset($_COOKIE['createdAccount']) )
 			{
 				self::setPersistentCookie('createdAccount', time());
 			}
