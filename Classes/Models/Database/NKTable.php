@@ -390,6 +390,10 @@ class NKTable
 				{
 					continue;
 				}
+				/*if( ($tableKey === $this->primaryKey && $object->$tableKey == NULL) || $object->$tableKey == NULL )
+				{
+					continue;
+				}*/
 				$comma = ",";
 				if( $cnt == 0 )
 				{

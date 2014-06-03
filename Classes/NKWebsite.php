@@ -25,6 +25,7 @@ class NKWebsite
 	
 	private static $_sharedInstance;
 	private $_controller;
+	private $bootstrap;
 	
 	public 	$request;
 	
@@ -74,7 +75,7 @@ class NKWebsite
 		// of bootstrap at this point in time.
 		if( isset($classes['BootstrapController']) )
 		{
-			$bootstrap = new BootstrapController();
+			self::sharedWebsite()->bootstrap = new BootstrapController();
 		}
 		
 		// Setup done, handle the request.
@@ -97,13 +98,22 @@ class NKWebsite
 	 */
 	public function handleRequest()
 	{
-		$this->request 		= new NKRequest();
+		$this->request = new NKRequest();
+		
+		// give the bootstrap an opportunity to apply a routing function to the current request
+		// if so desired by the web developer
+		if( $this->bootstrap && method_exists($this->bootstrap, 'catchRequest') )
+		{
+			$this->bootstrap->catchRequest($this->request);
+		}
+		
+		// create the controller and the action we have to execute
 		$controllerClass 	= ucfirst($this->request->controllerName).'Controller';
 		$action 			= $this->request->actionName.'Action';
 		$this->_controller 	= new $controllerClass();
 		
-		// figure out whether the controller has a view and action method
-		// for the current request, 404 if it doesn't otherwise call it
+		// Checks whether the current controller has a method for handling the action
+		// and verify whether there is a valid view available
 		if( !$this->_controller->handleRequest($this->request) || !method_exists($this->_controller, $action) )
 		{
 			throw new PageNotFoundException();

@@ -104,6 +104,7 @@ class NKTableRow
 					{
 						$value = $this->$comment['column'];
 					}
+
 					$constraint 	= $comment['comment'];
 					
 					if( $value && strlen($constraint) > 0 )
@@ -198,4 +199,3 @@ class NKTableRow
 			return false;
 		}
 	}
-}
