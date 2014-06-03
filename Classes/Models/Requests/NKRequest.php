@@ -157,6 +157,20 @@ class NKRequest
 		return NULL;
 	}
 	
+	/**
+	 * Set a value for a key... need to figure out a way ofgetting rid of this 
+	 * method without removing the obvious funcionality benefits for the bootstrap controller...
+	 *
+	 * @param mixed $value
+	 * @param string $key
+	 *
+	 * @return void
+	 */
+	public function setValueForKey($value, $key)
+	{
+		$this->values[$key] = $value;
+	}
+	
 	/*
 	 * Determines whether the current request supposedly came from
 	 * a javascript request, and therefore should be rendered
