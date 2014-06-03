@@ -99,6 +99,10 @@ class NKTableRow
 				$comments = $table->comments;
 				foreach($comments as $comment)
 				{
+					if( !isset($this->$comment['column']) )
+					{
+						continue;
+					}
 					$value 			= $this->$comment['column'];
 					$constraint 	= $comment['comment'];
 					

@@ -386,10 +386,14 @@ class NKTable
 			$cnt = 0;
 			foreach($this->tableLayout as $tableKey)
 			{
-				if( ($tableKey === $this->primaryKey && $object->$tableKey == NULL) || $object->$tableKey == NULL )
+				if( ($tableKey === $this->primaryKey && !isset($object->$tableKey)) || !isset($object->$tableKey) )
 				{
 					continue;
 				}
+				/*if( ($tableKey === $this->primaryKey && $object->$tableKey == NULL) || $object->$tableKey == NULL )
+				{
+					continue;
+				}*/
 				$comma = ",";
 				if( $cnt == 0 )
 				{

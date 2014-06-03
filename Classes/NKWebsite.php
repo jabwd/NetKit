@@ -25,6 +25,7 @@ class NKWebsite
 	
 	private static $_sharedInstance;
 	private $_controller;
+	private $bootstrap;
 	
 	public 	$request;
 	
@@ -74,7 +75,7 @@ class NKWebsite
 		// of bootstrap at this point in time.
 		if( isset($classes['BootstrapController']) )
 		{
-			$bootstrap = new BootstrapController();
+			$this->bootstrap = new BootstrapController();
 		}
 		
 		// Setup done, handle the request.
@@ -101,6 +102,13 @@ class NKWebsite
 		$controllerClass 	= ucfirst($this->request->controllerName).'Controller';
 		$action 			= $this->request->actionName.'Action';
 		$this->_controller 	= new $controllerClass();
+		
+		if( $this->bootstrap && method_exists($this->bootstrap, 'catchRequest') )
+		{
+			$this->bootstrap->catchRequest($request);
+			echo $request->controllerName;
+			exit;
+		}
 		
 		// figure out whether the controller has a view and action method
 		// for the current request, 404 if it doesn't otherwise call it
