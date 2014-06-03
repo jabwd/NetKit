@@ -199,3 +199,4 @@ class NKTableRow
 			return false;
 		}
 	}
+}
