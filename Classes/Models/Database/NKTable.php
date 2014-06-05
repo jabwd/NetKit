@@ -159,7 +159,6 @@ class NKTable
 				{
 					$operator = strpos($key, '=');
 					$data .= substr($key, 0, $operator)."|";
-					//echo 'Tracked key was: '.substr($key, 0, $operator).'<br />';
 				}
 				$data .= "\n";
 			}
