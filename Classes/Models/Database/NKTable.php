@@ -18,6 +18,9 @@ class NKTable
 	protected $database;	// custom database instance
 	public $comments;		// table column comments
 	
+	/**
+	 * Shared instance for 
+	 */
 	public static function defaultTable()
 	{
 		static $instance;
@@ -41,10 +44,10 @@ class NKTable
 		if( $this->databaseName )
 		{
 			$this->database = new NKDatabase(array(
-				'host'=>Config::databaseHost,
-				'username'=>Config::databaseUsername,
-				'password'=>Config::databasePassword,
-				'database'=>$this->databaseName
+				'host'		=>Config::databaseHost,
+				'username'	=>Config::databaseUsername,
+				'password'	=>Config::databasePassword,
+				'database'	=>$this->databaseName
 			));
 		}
 		
@@ -140,6 +143,29 @@ class NKTable
 	 */
 	public function fetchAll($where = "", $tail = "", $skip = NULL)
 	{
+		if( false )
+		{
+			$keys = explode(" AND ", $where);
+			if( count($keys) == 0 )
+			{
+				// this happens when there is only 1 key ( Thus no AND )
+				$operator = strpos($where, "=");
+				echo substr($where, 0, $operator);
+			}
+			else
+			{
+				$data = '['.$this->tableName.'] ';
+				foreach($keys as $key)
+				{
+					$operator = strpos($key, '=');
+					$data .= substr($key, 0, $operator)."|";
+					//echo 'Tracked key was: '.substr($key, 0, $operator).'<br />';
+				}
+				$data .= "\n";
+			}
+			file_put_contents($_SERVER['DOCUMENT_ROOT']."/cache/tableKeys.txt", $data, FILE_APPEND);
+		}
+		//exit;
 		$query 				= "SELECT ";
 		$tableNames 		= NULL;
 		$queryConstraints 	= NULL;
