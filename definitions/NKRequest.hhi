@@ -7,4 +7,6 @@ class NKRequest
 	
 	public function valueForKey(string $key): mixed;
 	public function setValueForKey(mixed $value, string $key): void;
+	
+	public static function stringForURLTitle(string $value): string;
 }
