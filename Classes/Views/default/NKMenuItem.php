@@ -4,6 +4,7 @@ class NKMenuItem
 	public $title; 			// the display title of the menu Item
 	public $extraClass;		// extra classes for custom css styles per item
 	public $link;			// the href
+	public $tail;			// something that comes after the menu item for some reason
 	
 	private $controllers;	// list of controller names
 	private $action;		// action required for the list of controllers ( extra constraint, not standalone )

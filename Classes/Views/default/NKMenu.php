@@ -22,7 +22,7 @@ class NKMenu
 			}
 			echo '<a href="'.$menuItem->link.'"';
 			echo ' class="'.$extra.$menuItem->extraClass.'"';
-			echo '>'.$menuItem->title."</a>\n\t\t\t";
+			echo '>'.$menuItem->title."</a>".$menuItem->tail."\n\t\t\t";
 		}
 	}
 }
