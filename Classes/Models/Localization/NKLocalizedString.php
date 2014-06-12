@@ -6,7 +6,7 @@ class NKLocalizedString
 
 	public function __construct($languageName)
 	{
-		$path = 'Website/Localization/'.$languageName;
+		$path = 'Website/Localization/'.$languageName.'.strings';
 		if( !file_exists($path) )
 		{
 			throw new Exception('Cannot find translation file for '.$languageName.' at '.$path);
