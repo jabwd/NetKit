@@ -1,16 +1,16 @@
 <?hh
 class NKStringsFile
 {
-	protected array $storage;
+	public array $strings;
 
 	public function __construct(string $path): void
 	{
 		if( !file_exists($path) )
 		{
-			throw new Exception('Cannot open strings file at path '.$path);
+			throw new Exception('Cannot open strings file at path '.$path, 404);
 		}
 		
-		$this->storage = array();
+		$this->strings = array();
 		
 		$content 	= file_get_contents($path);
 		$lines 		= explode("\n", $content);
@@ -42,11 +42,19 @@ class NKStringsFile
 				
 				if( $section )
 				{
-					$this->storage[$section][$key] = $value;
+					if( isset($this->strings[$section][$key]) )
+					{
+						throw new Exception('Error: duplicate key on section '.$section.': '.$key, 500);
+					}
+					$this->strings[$section][$key] = $value;
 				}
 				else
 				{
-					$this->storage[$key] = $value;
+					if( isset($this->strings[$key]) )
+					{
+						throw new Exception('Error duplicate key on strings file '.$key.' either global key or section name already exists', 500);
+					}
+					$this->strings[$key] = $value;
 				}
 			}
 			else if( strpos($line, '[') === 0 )
@@ -55,17 +63,8 @@ class NKStringsFile
 			}
 			else
 			{
-				echo 'Ignoring line '.$lineCount;
+				// ignore this line.
 			}
 		}
-	}
-	
-	public function valueForKey(string $key): ?string
-	{
-		if( !isset($this->storage[$key]) )
-		{
-			return NULL;
-		}
-		return $this->storage[$key];
 	}
 }
