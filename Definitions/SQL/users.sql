@@ -1,0 +1,20 @@
+CREATE TABLE `users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `salt` varchar(255) NOT NULL DEFAULT 'henkiepenkei',
+  `nickname` varchar(40) DEFAULT '',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `reputation` int(11) NOT NULL DEFAULT '5',
+  `profileHits` int(11) NOT NULL DEFAULT '0',
+  `avatarURL` varchar(100) DEFAULT NULL,
+  `bannerURL` varchar(100) DEFAULT NULL,
+  `flag` varchar(20) NOT NULL DEFAULT 'nl',
+  `honorary` tinyint(1) NOT NULL DEFAULT '0',
+  `steamUsername` varchar(50) DEFAULT NULL,
+  `xfireUsername` varchar(50) DEFAULT NULL,
+  `originUsername` varchar(50) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8

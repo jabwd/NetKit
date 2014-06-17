@@ -22,6 +22,7 @@ function handleException($exception)
 	if( $code < 400 || $code > 410 )
 	{
 		// more advanced 'graphical' error handling
+		$code = 500;
 	}
 	echo '<!DOCTYPE html><html>';
 	echo '<head><style type="text/css">
@@ -33,7 +34,7 @@ function handleException($exception)
 	}
 	</style>';
 	echo '</head><body>';
-	echo '<h1>'.$exception->getCode().'</h1>';
+	echo '<h1>'.$code.'</h1>';
 	echo $exception->getMessage().'<br /><br />';
 	if( Config::debugMode )
 	{
