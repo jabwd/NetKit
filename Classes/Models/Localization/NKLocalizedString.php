@@ -1,19 +1,15 @@
-<?php
+<?hh
 class NKLocalizedString
 {
-	private $language;
-	private $data;
+	private string 			$language;
+	private NKStringsFile 	$file;
 
-	public function __construct($languageName)
+	public function __construct(string $languageName): void
 	{
 		$path = 'Website/Localization/'.$languageName.'.strings';
-		if( !file_exists($path) )
-		{
-			throw new Exception('Cannot find translation file for '.$languageName.' at '.$path);
-		}
 		
-		$this->language 	= $languageName;
-		$this->data 		= parse_ini_file($path, true);
+		$this->file 	= new NKStringsFile($path);
+		$this->language = $languageName;
 	}
 	
 	/**
@@ -21,11 +17,11 @@ class NKLocalizedString
 	 * the value found in the localizable file for the previous
 	 * set language mode
 	 */
-	public function localize($string, $category = 'general', $translationMode = false)
+	public function localize(string $string, string $category = 'general', bool $translationMode = false): string
 	{
-		if( isset($this->data[$category][$string]) )
+		if( isset($this->file->strings[$category][$string]) )
 		{
-			return $this->data[$category][$string];
+			return $this->file->strings[$category][$string];
 		}
 		if( $translationMode )
 		{

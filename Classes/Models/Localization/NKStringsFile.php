@@ -35,11 +35,15 @@ class NKStringsFile
 				$keyEnd = strpos($key, "\"");
 				$key 	= substr($key, 0, $keyEnd);
 				
-				$valueStart = strpos($line, ' = ');
-				$valueStart += 4; // _=_"
+				$valueStart = strpos($line, '=');
+				$valueStart += 1; // its at least 1 further than the equals sign
 				
-				$value = substr($line, $valueStart, strlen($line)-$valueStart-1);
+				$value 		= substr($line, $valueStart, strlen($line)-$valueStart-1);
+				$valueStart = strpos($value, "\"");
+				$value 		= substr($value, $valueStart+1);
 				
+				// if a section is set use a 2 dimensional array
+				// there will als obe checked for duplicate keys / sections
 				if( $section )
 				{
 					if( isset($this->strings[$section][$key]) )

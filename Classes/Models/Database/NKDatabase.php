@@ -96,6 +96,36 @@ class NKDatabase
 	}
 	
 	/**
+	 * Begins a transaction
+	 *
+	 * @return void
+	 */
+	public function beginTransaction()
+	{
+		$this->_connection->begin_transaction();
+	}
+	
+	/**
+	 * Ends a transaction
+	 *
+	 * @return bool
+	 */
+	public function commit()
+	{
+		return $this->_connection->commit();
+	}
+	
+	/**
+	 * Cancels a transaction
+	 *
+	 * @return boolean
+	 */
+	public function rollback()
+	{
+		return $this->_connection->rollback();
+	}
+	
+	/**
 	 * Returns the last inserted row ID
 	 *
 	 * @return integer last inserted row ID
