@@ -150,6 +150,7 @@ class NKSession
 	{
 		unset($GLOBALS['user']);
 		unset($_SESSION['userID']);
+		session_destroy();
 		self::unsetPersistentCookie(self::CookieLoginHashKey);
 		self::unsetPersistentCookie(self::CookieUserIDKey);
 	}

@@ -34,7 +34,7 @@ class User extends NKTableRow
 	 */
 	public function newHashedPassword($password)
 	{
-		if( ! $this->salt || strlen($this->salt) < 2 )
+		if( !isset($this->salt) || strlen($this->salt) < 2 ) 
 		{
 			$this->salt = self::generateSalt();
 		}

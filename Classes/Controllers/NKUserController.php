@@ -99,6 +99,7 @@ class NKUserController extends NKActionController
 			$nickname = $_POST['nickname'];
 			
 			// nicknames are optional
+			$errors = array();
 			if( strlen($nickname) < 1 )
 			{
 				$nickname = NULL;
@@ -142,14 +143,14 @@ class NKUserController extends NKActionController
 				$user->password 	= $user->newHashedPassword($password);
 				$user->nickname 	= $nickname;
 				$user->reputation 	= 5;
-				$user->profileHits	= 0;
+				$user->profileHits	= 1;
 				$user->save();
 				
 				if( $login )
 				{
 					// log the user in
 					$retain = false;
-					if( $_POST['rememberMe'] )
+					if( isset($_POST['rememberMe']) )
 					{
 						$retain = true;
 					}
