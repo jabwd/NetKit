@@ -515,4 +515,20 @@ class NKTable
 		$result->free();
 		return (int)$rows['count'];
 	}
+	
+	/**
+	 * Returns a string containing the SQL needed
+	 * to create a table that is in structure a clone of
+	 * of the current instance one
+	 *
+	 * @return string
+	 */
+	public function blueprint()
+	{
+		$r = $this->query("SHOW CREATE TABLE ".$this->tableName);
+		$result = $r->fetch_assoc();
+		$r->free();
+		
+		return $result['Create Table'];
+	}
 }
