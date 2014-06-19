@@ -67,7 +67,8 @@ class NKTable
 		if( count($this->tableLayout) < 1 )
 		{
 			// fetch column comments
-			$comments = $this->query("SELECT column_name,column_comment FROM information_schema.columns WHERE table_name = '".$this->tableName."'");
+			$comments = $this->query("SELECT `column_name`, `column_comment` 
+										FROM `information_schema.columns` WHERE `table_name` = '".$this->tableName."'");
 			if( $comments && $comments->num_rows > 0 )
 			{
 				$commentList = array();
@@ -79,6 +80,7 @@ class NKTable
 				}
 				$this->comments = $commentList;
 			}
+			$comments->free();
 			
 			// Consideration: Currently our layout is pretty primitive and we can probably
 			// get away with only using the above query for the comments for the layout
@@ -98,14 +100,15 @@ class NKTable
 						$this->primaryKey = $row['Field'];
 					}
 				}
+				$result->free(); // done with the query result.
 				$this->tableLayout = $layout;
 				
+				// cache the table layout and table comments
 				$cacheManager->setValueForKey(array(
 					'primary'=>$this->primaryKey,
 					'layout'=>$layout,
 					'comments'=>$commentList
 				), $key);
-				$result->free();
 			}
 			else
 			{
@@ -164,7 +167,8 @@ class NKTable
 			}
 			file_put_contents($_SERVER['DOCUMENT_ROOT']."/cache/tableKeys.txt", $data, FILE_APPEND);
 		}
-		//exit;
+		
+		
 		$query 				= "SELECT ";
 		$tableNames 		= NULL;
 		$queryConstraints 	= NULL;
@@ -270,15 +274,17 @@ class NKTable
 		$query .= ' '.$tail;
 		
 		
+		// execute the query
 		$result = $this->query($query);
 		if( $result && $result->num_rows > 0 )
 		{
-			while( $row = $result->fetch_assoc() )
+			while( ($row = $result->fetch_assoc()) )
 			{
-				$instances = NULL;
-				$self = new $this->rowClass($this);
-				
-				$key = $name."_X_";
+				// parse the keys used into the correct column name
+				// and its value associated with it
+				$instances 	= NULL;
+				$self 		= new $this->rowClass($this);
+				$key 		= $name."_X_";
 				foreach($this->tableLayout as $columnName)
 				{
 					$self->$columnName = $row[$key.$columnName];
@@ -306,6 +312,8 @@ class NKTable
 				
 				$finalResult[] = $self;
 			}
+			
+			/// free up some memory, reduces  footprint during execution.
 			$result->free();
 		}
 		return $finalResult;
@@ -338,12 +346,12 @@ class NKTable
 	public function find($id)
 	{
 		$id = (int)$id;
-		if( $id > 0 && $this->rowClass )
+		if( $id > 0 )
 		{
 			$array = $this->fetchAll($this->tableName.'.'.$this->primaryKey.'='.$id);
 			return $array[0];
 		}
-		return NULL;
+		return null;
 	}
 	
 	/**
@@ -359,7 +367,7 @@ class NKTable
 	{
 		// this way the user can pass an array if he wants
 		// to specify a sort by in the SQL query
-		$order = NULL;
+		$order = null;
 		if( is_array($where) )
 		{
 			$order = $where[1];
@@ -441,7 +449,7 @@ class NKTable
 			}
 			$query .= ") VALUES (".$values.")";
 			$database = $this->database();
-			$result = $database->query($query);
+			$database->query($query);
 			return $database->lastInsertID();
 		}
 		else
