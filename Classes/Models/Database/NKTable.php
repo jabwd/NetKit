@@ -15,8 +15,9 @@ class NKTable
 	public $tableLayout;	// table layout ( auto discovered )
 	public $extraTable;		// used for joins
 	public $databaseName;	// custom database to be used with this table?
-	protected $database;	// custom database instance
 	public $comments;		// table column comments
+	
+	protected $database;	// custom database instance
 	
 	/**
 	 * Shared instance for 
@@ -25,7 +26,7 @@ class NKTable
 	{
 		static $instance;
 		$className = get_called_class();
-		if( $instance == NULL )
+		if( $instance == null )
 		{
 			$instance = new $className;
 		}
@@ -170,9 +171,9 @@ class NKTable
 		
 		
 		$query 				= "SELECT ";
-		$tableNames 		= NULL;
-		$queryConstraints 	= NULL;
-		$finalResult		= NULL;
+		$tableNames 		= null;
+		$queryConstraints 	= null;
+		$finalResult		= null;
 		
 		// Add the columns of 'self' to the current query
 		// With a good prefix so they do not interfere with any
@@ -282,7 +283,7 @@ class NKTable
 			{
 				// parse the keys used into the correct column name
 				// and its value associated with it
-				$instances 	= NULL;
+				$instances 	= null;
 				$self 		= new $this->rowClass($this);
 				$key 		= $name."_X_";
 				foreach($this->tableLayout as $columnName)
