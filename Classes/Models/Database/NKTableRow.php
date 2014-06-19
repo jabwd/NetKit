@@ -97,6 +97,10 @@ class NKTableRow
 			if( $table )
 			{
 				$comments = $table->comments;
+				if( !$comments )
+				{
+					return true;
+				}
 				foreach($comments as $comment)
 				{
 					$value = NULL;

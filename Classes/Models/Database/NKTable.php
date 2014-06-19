@@ -70,6 +70,7 @@ class NKTable
 			// fetch column comments
 			$comments = $this->query("SELECT `column_name`, `column_comment` 
 										FROM `information_schema.columns` WHERE `table_name` = '".$this->tableName."'");
+			$commentList = null;
 			if( $comments && $comments->num_rows > 0 )
 			{
 				$commentList = array();
@@ -80,8 +81,8 @@ class NKTable
 					$commentList[] 	= $row;
 				}
 				$this->comments = $commentList;
+				$comments->free();
 			}
-			$comments->free();
 			
 			// Consideration: Currently our layout is pretty primitive and we can probably
 			// get away with only using the above query for the comments for the layout
@@ -120,6 +121,10 @@ class NKTable
 	
 	protected function query($query)
 	{
+		if( false && $this->tableName != 'Queries' )
+		{
+			file_put_contents("queryLog.log", "[QUERY_START]".$query."\n", FILE_APPEND);
+		}
 		if( $this->database )
 		{
 			return $this->database->query($query);
@@ -168,7 +173,6 @@ class NKTable
 			}
 			file_put_contents($_SERVER['DOCUMENT_ROOT']."/cache/tableKeys.txt", $data, FILE_APPEND);
 		}
-		
 		
 		$query 				= "SELECT ";
 		$tableNames 		= null;
