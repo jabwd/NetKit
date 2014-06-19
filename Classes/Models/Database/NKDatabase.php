@@ -76,7 +76,7 @@ class NKDatabase
 		$result = $this->_connection->query($query);
 		if( $result == NULL )
 		{
-			throw new Exception($this->_connection->error, 500);
+			return;
 		}
 		$time 	= microtime(); 
 		$time 	= explode(" ", $time); 

@@ -34,7 +34,7 @@ function handleException($exception)
 	}
 	</style>';
 	echo '</head><body>';
-	echo '<h1>'.$code.'</h1>';
+	echo '<h1>',$code,'</h1>';
 	echo $exception->getMessage().'<br /><br />';
 	if( Config::debugMode )
 	{
@@ -46,24 +46,11 @@ function handleException($exception)
 			{
 				$class = $line['class'];
 			}
-			echo '['.$line['line'].'] <b>'.$class.'::'.$line['function'].'</b> in ('.$line['file'].')<br />';
+			echo '[',$line['line'],'] <b>',$class,'::',$line['function'],'</b> in (',$line['file'],')<br />';
 		}	
 	}
-	echo '<a href="/">Home</a>';
-	echo '</body></html>';
+	echo '<a href="/">Home</a></body></html>';
 	exit;
-	/*if( headers_sent() || Config::debugMode )
-	{
-		print_r($exception);
-		exit;
-	}
-	else
-	{
-		
-	}
-	print_r($exception->getMessage());
-	print_r($exception->getTrace());
-	exit;*/
 }
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)
